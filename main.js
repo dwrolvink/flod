@@ -18,6 +18,9 @@ window.onload = function() {
 // Resize event
 window.addEventListener("resize", OnWindowResize);
 
+function OnWindowResize() {
+	UpdateScreen();
+}
 
 setInterval(draw, 15);
 

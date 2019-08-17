@@ -8,25 +8,32 @@ function draw() {
 
 
 	// Draw grid
-	w = Math.floor(canvas.width / blocksize);
-	h = Math.floor(canvas.height / blocksize);
-	b = blocksize;
-	ctx.strokeStyle = "rgb(36, 38, 48)";
-	ctx.lineWidth = 1;
-	
-	ctx.beginPath();
-	
-	for (i=0; i < w+2; i++) { // vertical lines
-		ctx.moveTo(i*b + viewport.x%b, -1*b + viewport.y%b);
-		ctx.lineTo(i*b + viewport.x%b, h*b  + viewport.y%b);
-	}
-	for (i=-1; i < h+2; i++) { // horizontal lines
-		ctx.moveTo(-1*b + viewport.x%b, i*b + viewport.y%b);
-		ctx.lineTo(w*b  + viewport.x%b, i*b + viewport.y%b);
-	}
+	if (window.config.blocksize > 6) {
+		w = Math.floor(canvas.width / blocksize);
+		h = Math.floor(canvas.height / blocksize);
+		b = blocksize;
+		ctx.strokeStyle = "rgb(36, 38, 48)";
+		ctx.lineWidth = 1;
+		
+		ctx.beginPath();
+		
+		for (i=0; i < w+2; i++) { // vertical lines
+			ctx.moveTo(i*b + viewport.x%b, -1*b + viewport.y%b);
+			ctx.lineTo(i*b + viewport.x%b, h*b  + viewport.y%b);
+		}
+		for (i=-1; i < h+2; i++) { // horizontal lines
+			ctx.moveTo(-1*b + viewport.x%b, i*b + viewport.y%b);
+			ctx.lineTo(w*b  + viewport.x%b, i*b + viewport.y%b);
+		}
 
-	ctx.stroke(); 
-	
+		ctx.stroke(); 
+	}
+		
+	ctx.font = '12px Arial';
+	ctx.fillStyle   = 'white';
+	ctx.fillText('Blocksize: '+window.config.blocksize, canvas.width-150, 20); 	
+
+
 	// Draw objects
 	for (i=0; i < ObjectList.length; i++) {
 		let obj = ObjectList[i];

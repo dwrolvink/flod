@@ -9,6 +9,7 @@ This site is build in/for the latest version of Firefox on Linux Manjaro. Other 
 #### Controls 
 - Drag empty space to move around
 - Drag object to move it
+- Press and hold space to move around even when clicking on an object
 - Click object to select it
 - Scroll to zoom in/out
 
