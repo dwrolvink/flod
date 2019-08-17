@@ -63,6 +63,16 @@ class Rectangle {
 
 		return null;
 	}
+
+	Kill() {
+		let list = []
+		for (obj of ObjectList) {
+			if (obj != this){
+				list.push(obj);
+			}
+		}
+		ObjectList = list;
+	}
 }
 
 // Function to make object creation less verbose
@@ -140,6 +150,8 @@ function DeleteSelectedObject() {
 	}
 	ObjectList = newlist;
 }
+
+
 
 function BringSelectedObjectToFront() {
 	let newlist = []

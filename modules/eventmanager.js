@@ -3,6 +3,7 @@ canvas.addEventListener("mouseup",   OnCanvasLMBU, false);
 canvas.addEventListener("mousemove", OnCanvasMouseMove, false);
 document.addEventListener("keydown", OnCanvasKeyDown);
 document.addEventListener("keyup",   OnCanvasKeyUp);
+document.addEventListener('contextmenu', OnRightClick);
 
 var eventmgmt = {
 	mousepos : {
@@ -26,6 +27,17 @@ var eventmgmt = {
 var viewport = {
 	x: 0,
 	y: 0
+}
+
+function OnRightClick(event) {
+
+	event.preventDefault();
+
+	cursor = getMousePos(event);
+	obj = SelectObject(cursor.x, cursor.y);
+	if (obj){
+		obj.Kill();
+	}
 }
 
 function OnCanvasKeyDown(event) {
@@ -78,9 +90,13 @@ function getMousePos(event) {
 
 function OnCanvasLMBD(event)
 {
+	if (event.buttons != 1){
+		return;
+	}
 	cursor = getMousePos(event);
 	obj = SelectObject(cursor.x, cursor.y);
 
+	console.log(event);
 
 	// Save info 
 	eventmgmt.pressed.leftmousebutton = true;
