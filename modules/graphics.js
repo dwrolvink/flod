@@ -35,7 +35,7 @@ function draw() {
 
 
 	// Draw objects
-	for (i=0; i < ObjectList.length; i++) {
+	for (i=0; i < ObjectList.length; i++) { 
 		let obj = ObjectList[i];
 
 		ctx.strokeStyle = obj.bordercolor; 
