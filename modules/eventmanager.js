@@ -163,7 +163,19 @@ function OnCanvasLMBU(event)
 		return;
 	}
 
+	if (Clipboard.length > 0){
+		for (obj of Clipboard){
+			cursor = eventmgmt.mousepos.current;
+			ma     = obj.mouse_anchor;
 
+			obj.pos.x = Math.round((cursor.x + ma.x - viewport.x) / blocksize);
+			obj.pos.y = Math.round((cursor.y + ma.y - viewport.y) / blocksize);
+			ObjectList.push(obj);
+		}
+		Clipboard = [];
+
+		return;
+	}
 
 	// case 2: click object = (de)select object
 	if (null != obj) {

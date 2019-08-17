@@ -190,6 +190,16 @@ function DeleteSelectedObject() {
 	ObjectList = newlist;
 }
 
+function RemoveObjectFromList(list, object) {
+	let newlist = []
+	for (obj of list) {
+		if (obj != object) {
+			newlist.push(obj);
+		}
+	}
+	list = newlist;
+}
+
 
 
 function BringSelectedObjectToFront() {

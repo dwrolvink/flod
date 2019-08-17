@@ -35,20 +35,20 @@ function draw() {
 	// Draw clipboard
 	for (obj of Clipboard) 
 	{ 
-		// draw object itself
-		bg = obj.bgcolor;
-	
+		// Set cliboard objects to follow cursor		
 		cursor = eventmgmt.mousepos.current;
-		
-		ma = obj.mouse_anchor;
+		ma     = obj.mouse_anchor;
+		obj.pos.x = Math.round((cursor.x + ma.x - viewport.x) / blocksize);
+		obj.pos.y = Math.round((cursor.y + ma.y - viewport.y) / blocksize);
 
-		let x = cursor.x + ma.x;
-		let y = cursor.y + ma.y;
-		let w = obj.width * blocksize;
-		let h = obj.height * blocksize;
+		// Draw object
+		rect = obj.absrect
+		let x = rect.x1
+		let y = rect.y1
+		let w = rect.w
+		let h = rect.h
 
-		obj.absrect = [x,y,w,h];
-
+		bg = obj.bgcolor;
 		ctx.fillStyle   = rgba(bg[0], bg[1], bg[2], bg[3]);
 		ctx.fillRect(x, y, w, h); 
 
