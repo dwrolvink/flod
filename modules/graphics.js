@@ -104,6 +104,7 @@ function PrintInfo(){
 	ctx.fillText('Selected objects move together    ', left, l*lh); l+=2;
 
 	ctx.fillText('Click grid: new object    ', left, l*lh); l++;
+	ctx.fillText('Right Click object: delete object    ', left, l*lh); l++;
 	ctx.fillText('Click object to (de)select', left, l*lh); l++;
 
 	if (eventmgmt.objects_selected > 0){

@@ -96,8 +96,6 @@ function OnCanvasLMBD(event)
 	cursor = getMousePos(event);
 	obj = SelectObject(cursor.x, cursor.y);
 
-	console.log(event);
-
 	// Save info 
 	eventmgmt.pressed.leftmousebutton = true;
 	eventmgmt.mousepos.at_lmbd = cursor;
