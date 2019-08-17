@@ -31,18 +31,44 @@ function draw() {
 	// Print info
 	PrintInfo();
 
+
+	// Draw clipboard
+	for (obj of Clipboard) 
+	{ 
+		// draw object itself
+		bg = obj.bgcolor;
+	
+		cursor = eventmgmt.mousepos.current;
+		
+		ma = obj.mouse_anchor;
+
+		let x = cursor.x + ma.x;
+		let y = cursor.y + ma.y;
+		let w = obj.width * blocksize;
+		let h = obj.height * blocksize;
+
+		obj.absrect = [x,y,w,h];
+
+		ctx.fillStyle   = rgba(bg[0], bg[1], bg[2], bg[3]);
+		ctx.fillRect(x, y, w, h); 
+
+		ctx.font = `${fontsize}px Arial`;
+		margin = 0.2*b;
+		ctx.fillStyle   = obj.textcolor;
+		ctx.fillText(obj.text, x+margin, y+fontsize-margin); 
+	}
 	// Draw objects
 	for (obj of ObjectList) 
 	{ 
+		// draw object itself
 		bg = obj.bgcolor;
+		rect = obj.absrect
 
-		let x = obj.pos.x * blocksize + viewport.x;
-		let y = obj.pos.y * blocksize + viewport.y;
-		let w = obj.width  * blocksize;
-		let h = obj.height * blocksize;
+		let x = rect.x1
+		let y = rect.y1
+		let w = rect.w
+		let h = rect.h
 
-		ctx.strokeStyle = obj.bordercolor; 
-		
 		ctx.fillStyle   = rgba(bg[0], bg[1], bg[2], bg[3]);
 		ctx.fillRect(x, y, w, h); 
 
@@ -107,7 +133,7 @@ function PrintInfo(){
 	ctx.fillText('Right Click object: delete object    ', left, l*lh); l++;
 	ctx.fillText('Click object to (de)select', left, l*lh); l++;
 
-	if (eventmgmt.objects_selected > 0){
+	if (GetSelectedObjects().length > 0){
 		ctx.fillStyle   = '#66aa66';
 		ctx.fillText('Press F to bring to front', left, l*lh); l++;
 		ctx.fillText('Press B to bring to back ', left, l*lh); l++; 	 	

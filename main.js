@@ -5,6 +5,7 @@ var ctx = canvas.getContext("2d");
 
 // Main list of drawable Objects
 var ObjectList = [];
+var Clipboard = [];
 
 
 // MouseScroll event

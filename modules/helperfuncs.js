@@ -10,13 +10,3 @@ function greater(a,b){
 	}
 	return a
 }
-
-function GetSelectedObjects() {
-	let list = [];
-	for (obj of ObjectList){
-		if (obj.selected){
-			list.push(obj);
-		}
-	}
-	return list;
-}

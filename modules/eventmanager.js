@@ -13,7 +13,6 @@ var eventmgmt = {
 	},
 	object_clicked_on: null,
 	object_origin: null,
-	objects_selected: 0,
 	viewport_origin: null,
 	pressed: {
 		spacebar: false,
@@ -34,9 +33,9 @@ function OnRightClick(event) {
 	event.preventDefault();
 
 	cursor = getMousePos(event);
-	obj = SelectObject(cursor.x, cursor.y);
-	if (obj){
-		obj.Kill();
+
+	if (obj = SelectObject(cursor.x, cursor.y)){
+		obj.Click(2);
 	}
 }
 
@@ -45,6 +44,9 @@ function OnCanvasKeyDown(event) {
 		case 32:
 			eventmgmt.pressed.spacebar = true;
 			break;		
+		case 16:
+			eventmgmt.pressed.shift = true;
+			break;
 		case 17:
 			eventmgmt.pressed.ctrl = true;
 			break;					
@@ -54,20 +56,28 @@ function OnCanvasKeyUp(event) {
 	switch (event.keyCode) {
 		case 32: // space
 			eventmgmt.pressed.spacebar = false;
+			objs = GetSelectedObjects();
 			break;
+		case 16:
+			eventmgmt.pressed.shift = false;
+			break;			
 		case 17:
 			eventmgmt.pressed.ctrl = false;
 			break;				
-		case 68: // D
-			eventmgmt.objects_selected = 0;
-			DeleteSelectedObject();
-			break;
 		case 66: // B
 			BringSelectedObjectToBack();
+			break;		
+		case 67: // C
+			for (obj of GetSelectedObjects()) {
+				copyRect(obj);
+			}	
 			break;
+		case 68: // D
+			DeleteSelectedObject();
+			break;
+
 		case 69: // ayyy (E)
-			eventmgmt.objects_selected = 0;
-			DeselectAllObjects();
+			DeselectAllObjects([]);
 			break;
 		case 70: // F	
 			BringSelectedObjectToFront();
@@ -132,36 +142,44 @@ function OnCanvasLMBU(event)
 	// Logic
 	let blocksize = config.blocksize;
 
-	let x1 = eventmgmt.mousepos.at_lmbd.x;
-	let x2 = eventmgmt.mousepos.at_lmbu.x;
-	let dx = x2 - x1;
-	let y1 = eventmgmt.mousepos.at_lmbd.y;
-	let y2 = eventmgmt.mousepos.at_lmbu.y;
-	let dy = y2 - y1;
+	
 
 	let obj = eventmgmt.object_clicked_on;
 
 	// case: selecting with ctrl (rect)
 	if (eventmgmt.selectionrect != null) {
-		DeselectAllObjects();
+		if (!eventmgmt.pressed.shift){
+			DeselectAllObjects([]);
+		}
 		SelectObjectsByRect(eventmgmt.selectionrect);
 		eventmgmt.selectionrect = null;
 		return;
 	}
 
 	// case 1: dragging
-	if (Math.abs(dx) >= 0.5*blocksize || Math.abs(dy) >= 0.5*blocksize) {
+	var [dx, dy, isDrag] = GetMouseDrag(eventmgmt.mousepos.at_lmbu);
+	if (isDrag) {
 		// dragging processing is done in OnCanvasMouseMove
 		return;
 	}
 
+
+
 	// case 2: click object = (de)select object
 	if (null != obj) {
-		// select
-		obj.selected = !obj.selected;
+		n = GetSelectedObjects().length;
 
-		if (obj.selected){ eventmgmt.objects_selected++;}
-		            else { eventmgmt.objects_selected--;}
+		// deselect all, unless shift is pressed
+		if (!eventmgmt.pressed.shift){
+			DeselectAllObjects([obj,]);
+		}		
+		// toggle obj if shift was pressed, or n<2
+		if(n < 2 || eventmgmt.pressed.shift){
+			obj.Click(1);
+		}
+		else {
+			obj.selected = true;
+		}
 	}
 
 	// case 3: click grid = create new object
@@ -189,11 +207,8 @@ function OnCanvasMouseMove(event) {
 
 	// Get drag motion
 	x1 = eventmgmt.mousepos.at_lmbd.x;
-	x2 = cursor.x;
-	dx = x2 - x1;
 	y1 = eventmgmt.mousepos.at_lmbd.y;
-	y2 = cursor.y;
-	dy = y2 - y1;
+	var [dx, dy, isDrag] = GetMouseDrag(cursor);
 
 	// Test if object is being dragged
 	obj = eventmgmt.object_clicked_on;
@@ -202,7 +217,7 @@ function OnCanvasMouseMove(event) {
 
 
 	if (ctrl_is_pressed) {
-		eventmgmt.selectionrect = [x1, y1, x2-x1, y2-y1];
+		eventmgmt.selectionrect = [x1, y1, dx, dy];
 		return;
 	}
 
@@ -236,6 +251,22 @@ function OnCanvasMouseMove(event) {
 		}
 	}
 	
+}
+
+function GetMouseDrag(cursor){
+	x1 = eventmgmt.mousepos.at_lmbd.x;
+	x2 = cursor.x;
+	dx = x2 - x1;
+	y1 = eventmgmt.mousepos.at_lmbd.y;
+	y2 = cursor.y;
+	dy = y2 - y1;
+
+	isDrag = false;
+	if (Math.abs(dx) >= 0.5*blocksize || Math.abs(dy) >= 0.5*blocksize) {
+		isDrag = true;
+	}
+
+	return [dx, dy, isDrag];
 }
 
 function AdjustZoom(event) {

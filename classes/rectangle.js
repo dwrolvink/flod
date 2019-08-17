@@ -12,6 +12,7 @@ class Rectangle {
 		this.height = 2;
 		this.selected = false;
 		this.text = "Hello there";
+		this.mouse_anchor = null;
 	}
 
 	get absrect(){
@@ -64,6 +65,14 @@ class Rectangle {
 		return null;
 	}
 
+	Click(button){
+		if (button == 1){
+			this.selected = !this.selected;
+		}
+		else if (button == 2){
+			this.Kill();
+		}
+	}
 	Kill() {
 		let list = []
 		for (obj of ObjectList) {
@@ -79,6 +88,34 @@ class Rectangle {
 function newRect(list) {
 	index = list.push(new Rectangle()); 
 	return list[index-1];
+}
+
+function copyRect(obj) {
+	newobj = new Rectangle();
+	newobj.bgcolor     = obj.bgcolor;
+	newobj.text        = obj.text;
+	newobj.bordercolor = obj.bordercolor;
+	newobj.textcolor   = obj.textcolor;
+	newobj.pos.x       = obj.pos.x;
+	newobj.pos.y       = obj.pos.y;
+	newobj.width       = obj.width;
+	newobj.height      = obj.height;
+
+	rect = newobj.absrect;
+	cx = rect.x1 - eventmgmt.mousepos.current.x;
+	cy = rect.y1 - eventmgmt.mousepos.current.y;
+	newobj.mouse_anchor = {x:cx, y:cy};
+	Clipboard.push(newobj);
+}
+
+function GetSelectedObjects() {
+	let list = [];
+	for (obj of ObjectList){
+		if (obj.selected){
+			list.push(obj);
+		}
+	}
+	return list;
 }
 
 // On mouseclick, this function may be called to find which rectangle is clicked
@@ -135,9 +172,11 @@ function SelectObjectsByRect(rect){
 		}
 	}	
 }
-function DeselectAllObjects() {
+function DeselectAllObjects(exclusion) {
 	for (obj of ObjectList) {
-		obj.selected = false;
+		if (!(exclusion.includes(obj))) {
+			obj.selected = false;
+		}
 	}
 }
 
