@@ -75,12 +75,12 @@ class Rectangle {
 	}
 	Kill() {
 		let list = []
-		for (obj of ObjectList) {
+		for (obj of ObjectList.objects) {
 			if (obj != this){
 				list.push(obj);
 			}
 		}
-		ObjectList = list;
+		ObjectList.objects = list;
 	}
 }
 
@@ -105,129 +105,6 @@ function copyRect(obj) {
 	cx = rect.x1 - eventmgmt.mousepos.current.x;
 	cy = rect.y1 - eventmgmt.mousepos.current.y;
 	newobj.mouse_anchor = {x:cx, y:cy};
-	Clipboard.push(newobj);
+	Clipboard.objects.push(newobj);
 }
 
-function GetSelectedObjects() {
-	let list = [];
-	for (obj of ObjectList){
-		if (obj.selected){
-			list.push(obj);
-		}
-	}
-	return list;
-}
-
-// On mouseclick, this function may be called to find which rectangle is clicked
-function SelectObject(x, y) {
-	let blocksize = config.blocksize;
-
-	for (i=ObjectList.length-1; i >= 0; i--) {
-		obj = ObjectList[i].PointSelect(x, y);
-		if (null != obj){
-			return obj;
-		}
-	}
-	return null;
-}
-
-function SelectObjectsByRect(rect){
-	x1 = rect[0]+rect[2];
-	x2 = rect[0];
-	y1 = rect[1]+rect[3];
-	y2 = rect[1];
-
-	xmax = greater(x1,x2);
-	xmin = lesser(x1,x2);
-	ymax = greater(y1,y2);
-	ymin = lesser(y1,y2);
-
-	for (obj of ObjectList) {
-		let x = obj.pos.x * blocksize + viewport.x;
-		let y = obj.pos.y * blocksize + viewport.y;
-		let w = obj.width  * blocksize;
-		let h = obj.height * blocksize;	
-
-		// Left
-		if (x < xmax && x > xmin) {
-			// Top
-			if (y < ymax && y > ymin) {
-				obj.selected = true;
-			}
-			// Bottom
-			else if ((y+h) < ymax && (y+h) > ymin) {
-				obj.selected = true;
-			}
-		}
-		// Right
-		else if ( (x+w) < xmax && (x+w) > xmin) {
-			// Top
-			if (y < ymax && y > ymin) {
-				obj.selected = true;
-			}
-			// Bottom
-			else if ((y+h) < ymax && (y+h) > ymin) {
-				obj.selected = true;
-			}			
-		}
-	}	
-}
-function DeselectAllObjects(exclusion) {
-	for (obj of ObjectList) {
-		if (!(exclusion.includes(obj))) {
-			obj.selected = false;
-		}
-	}
-}
-
-function DeleteSelectedObject() {
-	let newlist = []
-	for (obj of ObjectList) {
-		if (!obj.selected) {
-			newlist.push(obj);
-		}
-	}
-	ObjectList = newlist;
-}
-
-function RemoveObjectFromList(list, object) {
-	let newlist = []
-	for (obj of list) {
-		if (obj != object) {
-			newlist.push(obj);
-		}
-	}
-	list = newlist;
-}
-
-
-
-function BringSelectedObjectToFront() {
-	let newlist = []
-	for (obj of ObjectList) {
-		if (!obj.selected) {
-			newlist.push(obj);
-		}
-	}
-	for (obj of ObjectList) {
-		if (obj.selected) {
-			newlist.push(obj);
-		}
-	}	
-	ObjectList = newlist;
-}
-
-function BringSelectedObjectToBack() {
-	let newlist = []
-	for (obj of ObjectList) {
-		if (obj.selected) {
-			newlist.push(obj);
-		}
-	}
-	for (obj of ObjectList) {
-		if (!obj.selected) {
-			newlist.push(obj);
-		}
-	}	
-	ObjectList = newlist;
-}

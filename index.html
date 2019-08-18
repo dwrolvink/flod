@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<script src="config.js"></script>
 		<script src="modules/helperfuncs.js" ></script>
+		
 		<script src="modules/graphics.js"></script>
 
 		<style>
@@ -15,10 +16,35 @@
 			body {
 				margin:0px;
 				padding: 0px;
+				overflow: hidden;
+				font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+				font-size: 10pt;
 			}
 
 			canvas {
 				margin:0px;
+			}
+
+
+			#objectEditPane {
+				visibility: hidden;
+				position: absolute;
+				right: 0px;
+				top: 400px;
+				padding:10px;
+				border: 1px solid gray;
+				background-color:rgb(29, 29, 37);
+				color:white;
+			}
+			.input {
+				float:right;
+			}
+			.inputrow {
+				width:260px;
+			}
+			label {
+				padding-top:7px;
+				display: inline-block;
 			}
 		</style>
 	</head>
@@ -28,6 +54,15 @@
 		Your browser does not support the canvas element.
 		</canvas>
 
+		<div id="objectEditPane" >
+			<div class="inputrow"><label>Text:</label>		<input type="text" id="text" class="input"></div><br/>
+			<div class="inputrow"><label>Width:</label>  	<input type="text" id="width" class="input"></div><br/>
+			<div class="inputrow"><label>Height:</label>	<input type="text" id="height" class="input"></div><br/>
+			<div class="inputrow"><label>bgcolor:</label>	<input type="text" id="bgcolor" class="input"></div><br/>
+		</div>
+
+		<script src="modules/interface.js" ></script>
+		<script src="classes/object.manager.js"></script>
 		<script src="main.js"></script>
 		<script src="classes/rectangle.js"></script>
 		<script src="sets/rectangles1.js"></script>

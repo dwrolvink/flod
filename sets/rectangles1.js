@@ -1,9 +1,9 @@
 
 // Rectangles
-obj = newRect(window.ObjectList);
+obj = newRect(ObjectList.objects);
 obj.pos.x = 3;
 
-obj = newRect(window.ObjectList);
+obj = newRect(ObjectList.objects);
 obj.pos.y = 6;
 obj.pos.x = 40;
 obj.height = 7;

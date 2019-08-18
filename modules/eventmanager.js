@@ -20,7 +20,8 @@ var eventmgmt = {
 		shift: false,
 		leftmousebutton: false,
 	},
-	selectionrect: null
+	selectionrect: null,
+	input_selected: null
 }
 
 var viewport = {
@@ -28,18 +29,23 @@ var viewport = {
 	y: 0
 }
 
+
+
 function OnRightClick(event) {
 
 	event.preventDefault();
 
 	cursor = getMousePos(event);
 
-	if (obj = SelectObject(cursor.x, cursor.y)){
+	if (obj = ObjectList.SelectObject(cursor.x, cursor.y)){
 		obj.Click(2);
 	}
 }
 
 function OnCanvasKeyDown(event) {
+	if (eventmgmt.input_selected != null){
+		return;
+	}
 	switch (event.keyCode) {
 		case 32:
 			eventmgmt.pressed.spacebar = true;
@@ -53,35 +59,46 @@ function OnCanvasKeyDown(event) {
 	}
 }
 function OnCanvasKeyUp(event) {
+	if (eventmgmt.input_selected != null){
+		return;
+	}	
 	switch (event.keyCode) {
 		case 32: // space
 			eventmgmt.pressed.spacebar = false;
-			objs = GetSelectedObjects();
+			objs = ObjectList.GetSelectedObjects();
 			break;
 		case 16:
 			eventmgmt.pressed.shift = false;
 			break;			
 		case 17:
 			eventmgmt.pressed.ctrl = false;
-			break;				
+			break;	
+		case 27:
+			Clipboard = [];
+			break;
 		case 66: // B
-			BringSelectedObjectToBack();
+			ObjectList.BringSelectedObjectToBack();
 			break;		
 		case 67: // C
-			for (obj of GetSelectedObjects()) {
+			for (obj of ObjectList.GetSelectedObjects()) {
 				copyRect(obj);
 			}	
 			break;
 		case 68: // D
-			DeleteSelectedObject();
+			ObjectList.DeleteSelectedObject();
 			break;
 
 		case 69: // ayyy (E)
-			DeselectAllObjects([]);
+			ObjectList.DeselectAllObjects([]);
 			break;
 		case 70: // F	
-			BringSelectedObjectToFront();
+			ObjectList.BringSelectedObjectToFront();
 			break;	
+		case 78: // N
+			obj = newRect(ObjectList.objects);
+			obj.mouse_anchor = {x:-config.blocksize, y:-config.blocksize};
+			Clipboard.objects.push(obj);
+			break;
 		default:
 			alert(event.keyCode);				
 	}
@@ -104,7 +121,7 @@ function OnCanvasLMBD(event)
 		return;
 	}
 	cursor = getMousePos(event);
-	obj = SelectObject(cursor.x, cursor.y);
+	obj = ObjectList.SelectObject(cursor.x, cursor.y);
 
 	// Save info 
 	eventmgmt.pressed.leftmousebutton = true;
@@ -117,9 +134,9 @@ function OnCanvasLMBD(event)
 		if (obj.selected) { 
 			// save location of all selected objects
 			let list = [];
-			for (obje of ObjectList){
-				if (obje.selected){
-					list.push({x: obje.pos.x, y: obje.pos.y});
+			for (obj of ObjectList.objects){
+				if (obj.selected){
+					list.push({x: obj.pos.x, y: obj.pos.y});
 				}
 			}
 			eventmgmt.object_origin = list;
@@ -141,17 +158,14 @@ function OnCanvasLMBU(event)
 
 	// Logic
 	let blocksize = config.blocksize;
-
-	
-
 	let obj = eventmgmt.object_clicked_on;
 
 	// case: selecting with ctrl (rect)
 	if (eventmgmt.selectionrect != null) {
 		if (!eventmgmt.pressed.shift){
-			DeselectAllObjects([]);
+			ObjectList.DeselectAllObjects([]);
 		}
-		SelectObjectsByRect(eventmgmt.selectionrect);
+		ObjectList.SelectObjectsByRect(eventmgmt.selectionrect);
 		eventmgmt.selectionrect = null;
 		return;
 	}
@@ -163,27 +177,30 @@ function OnCanvasLMBU(event)
 		return;
 	}
 
-	if (Clipboard.length > 0){
-		for (obj of Clipboard){
+	// case: click (and clipboard is full): Place clipboard content
+	if (Clipboard.objects.length > 0){
+		for (obj of Clipboard.objects){
 			cursor = eventmgmt.mousepos.current;
 			ma     = obj.mouse_anchor;
 
 			obj.pos.x = Math.round((cursor.x + ma.x - viewport.x) / blocksize);
 			obj.pos.y = Math.round((cursor.y + ma.y - viewport.y) / blocksize);
-			ObjectList.push(obj);
+			ObjectList.objects.push(obj);
 		}
-		Clipboard = [];
+		ObjectList.DeselectAllObjects([]);
+		Clipboard.SelectAllObjects([]);
+		Clipboard.objects = [];
 
 		return;
 	}
 
 	// case 2: click object = (de)select object
 	if (null != obj) {
-		n = GetSelectedObjects().length;
+		n = ObjectList.GetSelectedObjects().length;
 
 		// deselect all, unless shift is pressed
 		if (!eventmgmt.pressed.shift){
-			DeselectAllObjects([obj,]);
+			ObjectList.DeselectAllObjects([obj,]);
 		}		
 		// toggle obj if shift was pressed, or n<2
 		if(n < 2 || eventmgmt.pressed.shift){
@@ -192,18 +209,22 @@ function OnCanvasLMBU(event)
 		else {
 			obj.selected = true;
 		}
+
+		// if shift was not pressed, and object is now selected
+		// then load object data
+		if (!eventmgmt.pressed.shift && n < 2 && obj.selected == true){
+			LoadObjectEditPane(obj);
+		}
+		if (!eventmgmt.pressed.shift && n < 2 && obj.selected == false){
+			LoadObjectEditPane(null);
+		}		
 	}
 
-	// case 3: click grid = create new object
+	// case: clicked grid
 	else {
-		x = Math.floor((eventmgmt.mousepos.at_lmbu.x - viewport.x) / blocksize)
-		y = Math.floor((eventmgmt.mousepos.at_lmbu.y - viewport.y) / blocksize)
-		obj = newRect(ObjectList);
-		obj.pos.x = x; obj.pos.y = y;
-		obj.width = 2; obj.height = 2; obj.text = '1';
-		return
+		ObjectList.DeselectAllObjects([]);
 	}
-	
+
 } 
 
 function OnCanvasMouseMove(event) {
@@ -248,7 +269,7 @@ function OnCanvasMouseMove(event) {
 			// move all selected objects
 			if (obj.selected) {
 				let i = 0;
-				for (obj of GetSelectedObjects()) {
+				for (obj of ObjectList.GetSelectedObjects()) {
 					obj.pos.x = object_origin[i].x + Math.round(dx / blocksize);
 					obj.pos.y = object_origin[i].y + Math.round(dy / blocksize);
 					i++;

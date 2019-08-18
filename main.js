@@ -4,8 +4,8 @@ var canvas = document.getElementById("mainCanvas");
 var ctx = canvas.getContext("2d");
 
 // Main list of drawable Objects
-var ObjectList = [];
-var Clipboard = [];
+var ObjectList = new ObjectManager();
+var Clipboard  = new ObjectManager();
 
 
 // MouseScroll event
@@ -14,6 +14,7 @@ window.onload = function() {
 		document.addEventListener('DOMMouseScroll', AdjustZoom, false);
 	}
 	UpdateScreen()
+	ArmInputFields();
 }
 
 // Resize event
