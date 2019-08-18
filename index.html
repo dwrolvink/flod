@@ -36,15 +36,25 @@
 				background-color:rgb(29, 29, 37);
 				color:white;
 			}
-			.input {
-				float:right;
-			}
+
 			.inputrow {
 				width:260px;
 			}
 			label {
 				padding-top:7px;
 				display: inline-block;
+			}
+
+			table {
+				color: white;
+
+			}
+			.namecol {
+				
+				padding-right:10px;
+			}
+			.nudge {
+				width: 10px;
 			}
 		</style>
 	</head>
@@ -55,10 +65,30 @@
 		</canvas>
 
 		<div id="objectEditPane" >
-			<div class="inputrow"><label>Text:</label>		<input type="text" id="text" class="input"></div><br/>
-			<div class="inputrow"><label>Width:</label>  	<input type="text" id="width" class="input"></div><br/>
-			<div class="inputrow"><label>Height:</label>	<input type="text" id="height" class="input"></div><br/>
-			<div class="inputrow"><label>bgcolor:</label>	<input type="text" id="bgcolor" class="input"></div><br/>
+
+			<table>
+				<tr>
+					<td class="namecol"><label>Text</label></td>
+					<td><textarea id="text" class="input" style="height:100px; width:100%"></textarea></td>
+				</tr><tr>
+					<td class="namecol"><label>Width</label></td>
+					<td><input type="text" id="width" class="input"></td>
+				</tr><tr>
+					<td class="namecol"><label>Height</label></td>
+					<td>
+						<input type="text" id="height" class="input">
+						<input type="submit" id="+height" class="nudge" value="+">
+						<input type="submit" id="-height" class="nudge" value="-">
+					</td>
+				</tr><tr>
+					<td class="namecol"><label>bgcolor</label></td>
+					<td><input type="text" id="bgcolor" class="input"></td>
+				</tr><tr>
+					<td class="namecol"><label>Textsize</label></td>
+					<td><input type="text" id="textsize" class="input"></td>
+				</tr>
+			</table>
+
 		</div>
 
 		<script src="modules/interface.js" ></script>

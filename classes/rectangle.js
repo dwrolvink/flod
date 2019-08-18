@@ -5,6 +5,7 @@ class Rectangle {
 		this.bgcolor = [0, 102, 255, 1];
 		this.bordercolor = "#AAAAAA"; 
 		this.textcolor = "#FFFFFF";
+		this.textsize = 8;
 		this.pos = {
 			x : 1,
 			y : 1

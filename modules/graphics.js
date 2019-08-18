@@ -1,4 +1,5 @@
 function draw() {
+
 	blocksize = config.blocksize;
 	let fontsize = Math.floor(1.8 * blocksize);
 
@@ -46,10 +47,18 @@ function draw() {
 		ctx.fillStyle   = rgba(bg[0], bg[1], bg[2], bg[3]);
 		ctx.fillRect(x, y, w, h); 
 
-		ctx.font = `${fontsize}px Arial`;
-		margin = 0.2*b;
 		ctx.fillStyle   = obj.textcolor;
-		ctx.fillText(obj.text, x+margin, y+fontsize-margin); 
+		textsize = fontsize*obj.textsize/10;
+		ctx.font = `${textsize}px Arial`;
+		margin = 0.2*b;
+		lineheight = textsize*1.1;
+		l = 0;
+		lines = obj.text.split('\n');
+		for (line of lines) {
+			ctx.fillText(line, x+margin, y+fontsize+(l*lineheight));
+			l++; 
+		}
+		
 
 		// draw selection highlight
 		if (obj.selected){

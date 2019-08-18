@@ -20,14 +20,35 @@ function LoadObjectEditPane(obj){
 	}
 }
 
+function RefreshObjectEditPane(){
+	if (ObjectList.GetSelectedObjects().length == 1) {
+		obj = ObjectList.GetSelectedObjects()[0];
+		LoadObjectEditPane(obj);
+	}
+	else {
+		LoadObjectEditPane(null);
+	}
+}
+
 function SelectInput(input){
 	eventmgmt.input_selected = input
 }
 
+
 function ProcessInput(el){
 	obj = eventmgmt.input_object;
 
-	obj[el.id] = el.value;
+	if (['width', 'height'].includes(el.id) ) {
+		
+		if (+el.value % 2){
+			obj[el.id] = +el.value + 1;
+			el.value = obj[el.id];
+		}
+		else {
+			obj[el.id] = el.value
+		}
+		
+	}
 
 	if (el.id == 'bgcolor') {
 		color = el.value.split(',');
@@ -51,15 +72,37 @@ function ProcessInput(el){
 		obj[el.id] = color;
 		el.value = color;
 	}
+
+	else {
+		obj[el.id] = el.value;
+	}
 	
 }
 
 function ArmInputFields() {
+	// arm all inputs with class input
 	elements =  document.getElementsByClassName('input');
 	for (el of elements) {
-		el.addEventListener("change",   function(){ProcessInput(this)});
+		el.addEventListener("change",   function(){ProcessInput(this)}      );
 		el.addEventListener("focusin",  function(){SelectInput(this)}       );
 		el.addEventListener("focusout", function(){SelectInput(null)}       );
 	}
+
+	// add responsiveness to select number of inputs
+	el = document.getElementById('text');
+	el.addEventListener("keyup",    function(){ProcessInput(this)}      );
+
+	// arm nudgers
+	el = document.getElementById('+height');
+	el.addEventListener("click",    function(){ChangeObjectHeight(this, 2)}      );
+
+	el = document.getElementById('-height');
+	el.addEventListener("click",    function(){ChangeObjectHeight(this, -2)}      );
 }
 	
+function ChangeObjectHeight(el, amount){
+	obj = eventmgmt.input_object;
+	input = document.getElementById('height');
+	input.value = +input.value + amount;
+	obj.height+= amount;
+}

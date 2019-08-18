@@ -167,6 +167,7 @@ function OnCanvasLMBU(event)
 			ObjectList.DeselectAllObjects([]);
 		}
 		ObjectList.SelectObjectsByRect(eventmgmt.selectionrect);
+		RefreshObjectEditPane()
 		eventmgmt.selectionrect = null;
 		return;
 	}
@@ -190,6 +191,7 @@ function OnCanvasLMBU(event)
 		}
 		ObjectList.DeselectAllObjects([]);
 		Clipboard.SelectAllObjects([]);
+		RefreshObjectEditPane()
 		Clipboard.objects = [];
 
 		return;
@@ -211,20 +213,13 @@ function OnCanvasLMBU(event)
 			obj.selected = true;
 		}
 
-		// if shift was not pressed, and object is now selected
-		// then load object data
-		if (!eventmgmt.pressed.shift && n < 2 && obj.selected == true){
-			LoadObjectEditPane(obj);
-		}
-		if (!eventmgmt.pressed.shift && n < 2 && obj.selected == false){
-			LoadObjectEditPane(null);
-		}		
+		RefreshObjectEditPane()	
 	}
 
 	// case: clicked grid
 	else {
 		ObjectList.DeselectAllObjects([]);
-		LoadObjectEditPane(null);
+		RefreshObjectEditPane()
 	}
 
 } 
