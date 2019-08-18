@@ -21,7 +21,8 @@ var eventmgmt = {
 		leftmousebutton: false,
 	},
 	selectionrect: null,
-	input_selected: null
+	input_selected: null,
+	objIncrement: 0
 }
 
 var viewport = {
@@ -66,6 +67,7 @@ function OnCanvasKeyUp(event) {
 		case 32: // space
 			eventmgmt.pressed.spacebar = false;
 			objs = ObjectList.GetSelectedObjects();
+			console.log(ObjectList.objects.length);
 			break;
 		case 16:
 			eventmgmt.pressed.shift = false;
@@ -95,9 +97,8 @@ function OnCanvasKeyUp(event) {
 			ObjectList.BringSelectedObjectToFront();
 			break;	
 		case 78: // N
-			obj = newRect(ObjectList.objects);
+			obj = newRect(Clipboard.objects);
 			obj.mouse_anchor = {x:-config.blocksize, y:-config.blocksize};
-			Clipboard.objects.push(obj);
 			break;
 		default:
 			alert(event.keyCode);				
@@ -223,6 +224,7 @@ function OnCanvasLMBU(event)
 	// case: clicked grid
 	else {
 		ObjectList.DeselectAllObjects([]);
+		LoadObjectEditPane(null);
 	}
 
 } 

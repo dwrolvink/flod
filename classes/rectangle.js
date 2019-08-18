@@ -1,6 +1,7 @@
 
 class Rectangle {
 	constructor(){
+		this.id = eventmgmt.objIncrement; eventmgmt.objIncrement++;
 		this.bgcolor = [0, 102, 255, 1];
 		this.bordercolor = "#AAAAAA"; 
 		this.textcolor = "#FFFFFF";
