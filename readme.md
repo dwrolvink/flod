@@ -20,12 +20,12 @@ If you have this file open in a text editor, and open the downloaded file with t
 - Scroll to zoom in/out
 - Drag empty space to move around
 - Drag object to move it (only when edit mode is on, see key table)
-- Press and hold space to move around even when clicking on an object in edit mode (= force pan)
+- Press and hold space to move around even when clicking on an object even when in edit mode (= force pan)
 
 | Key | Action |
 | :-- | :----- |
 | I   | Toggle edit mode. When edit mode is off pan is forced, so you can move around by dragging without moving objects by mistake. |
-| H   | Show hide help text |
+| H   | Show/hide help text |
 | Ctrl + drag | Select multiple object to move them collectively |
 | Shift + click | Add/remove objects from current selection. Also works with Ctrl added in the mix. |
 | R/Del | Delete selected objects |
