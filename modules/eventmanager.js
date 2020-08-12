@@ -135,7 +135,10 @@ function OnCanvasKeyUp(event) {
 			break;	
 		case 81: // Q
 			ToggleVisibility("pageSettings");	
-			break;					
+			break;	
+		case 72: // H
+			eventmgmt.persistent_choices.draw_help_text	= ! eventmgmt.persistent_choices.draw_help_text;
+			break;			
 		default:
 			//alert(event.keyCode);				
 	}

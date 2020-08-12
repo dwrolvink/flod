@@ -355,11 +355,16 @@ function PrintInfo(){
 	let l = 1; let lh = 20; left = canvas.width - 200;
 
 	// text
+	ctx.fillStyle   = 'rgba(171,255,0,1)';
+	ctx.fillText('https://github.com/dwrolvink/flod', left, l*lh); l+=2; 
+
 	if (eventmgmt.persistent_choices.force_pan){
 		ctx.fillStyle   = 'rgba(231,206,0,1)';
 		ctx.fillText('Press I to edit this diagram! ', left, l*lh); l+=2; 
-		ctx.fillStyle   = 'white';
+		
 	}
+
+	ctx.fillStyle   = 'white';
 
 	ctx.fillText('Scroll: zoom              ', left, l*lh); l++;
 	ctx.fillText('Drag grid: pan            ', left, l*lh); l++;
@@ -374,6 +379,7 @@ function PrintInfo(){
 	ctx.fillText('Selected objects move together    ', left, l*lh); l+=2;
 
 	ctx.fillText('Press G to toggle grid    ', left, l*lh); l++;
+	ctx.fillText('Press Q to page settings   ', left, l*lh); l++;
 	ctx.fillText('Press H to toggle help text    ', left, l*lh); l+=2;
 
 	ctx.fillText('Press N for new object    ', left, l*lh); l++;
