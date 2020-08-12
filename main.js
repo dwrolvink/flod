@@ -12,10 +12,16 @@ var Clipboard  = new ObjectManager();
 window.onload = function() {
 	if(window.addEventListener) {
 		document.addEventListener('DOMMouseScroll', AdjustZoom, false);
+		document.addEventListener('onwheel', AdjustZoom, false);
 	}
+	window.onmousewheel=AdjustZoom;
+
 	UpdateScreen()
 	ArmInputFields();
 }
+
+
+
 
 // Resize event
 window.addEventListener("resize", OnWindowResize);
