@@ -901,7 +901,7 @@ obj.pos.y = 99;
 obj.pos.x = 123;
 obj.width = 10;
 obj.height = 2;
-obj.bgcolor = 'rgba(0,188,255,0.6)';
+obj.bgcolor = 'rgba(3,56,96,0.6)';
 obj.text = "self.secret_key";
 obj.textsize = 7;
 obj.draw_arrow = "left_down";
@@ -992,11 +992,11 @@ obj.pos.y = 118;
 obj.pos.x = 108;
 obj.width = 16;
 obj.height = 2;
-obj.bgcolor = 'rgba(69,91,108,1)';
+obj.bgcolor = 'rgba(2,21,65,0.6)';
 obj.text = "session[\'user_private_key']";
 obj.textsize = 6;
 obj.draw_arrow = "none";
-obj.border_radius = "5";
+obj.border_radius = "0";
 obj.text_align = "top-center";
 
 
