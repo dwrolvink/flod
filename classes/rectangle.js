@@ -2,10 +2,11 @@
 class Rectangle {
 	constructor(){
 		this.id = eventmgmt.objIncrement; eventmgmt.objIncrement++;
-		this.bgcolor = [0, 102, 255, 1];
+		this.bgcolor = 'rgba(0, 102, 255, 1)';
 		this.bordercolor = "#AAAAAA"; 
 		this.textcolor = "#FFFFFF";
 		this.textsize = 8;
+		this.padding = 0.2;
 		this.pos = {
 			x : 1,
 			y : 1
@@ -15,6 +16,8 @@ class Rectangle {
 		this.selected = false;
 		this.text = "Hello there";
 		this.mouse_anchor = null;
+		this.draw_arrow = 'none';
+		this.border_radius = 0;
 	}
 
 	get absrect(){
@@ -72,7 +75,7 @@ class Rectangle {
 			this.selected = !this.selected;
 		}
 		else if (button == 2){
-			this.Kill();
+			//this.Kill();
 		}
 	}
 	Kill() {
@@ -102,6 +105,9 @@ function copyRect(obj) {
 	newobj.pos.y       = obj.pos.y;
 	newobj.width       = obj.width;
 	newobj.height      = obj.height;
+	newobj.textsize    = obj.textsize;
+	newobj.draw_arrow  = obj.draw_arrow;
+	newobj.border_radius  = obj.border_radius;
 
 	rect = newobj.absrect;
 	cx = rect.x1 - eventmgmt.mousepos.current.x;

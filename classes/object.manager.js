@@ -1,6 +1,17 @@
-class ObjectManager {
+class ObjectManager 
+{
 	constructor(){
 		this.objects = [];
+		this.iterations = [];
+	}
+
+	SaveState() {
+		this.iterations.push(JSON.stringify(this.objects)); 
+	}
+
+	RestoreState() {
+		this.objects = JSON.parse(this.iterations.pop());
+		UpdateScreen();
 	}
 
 	GetSelectedObjects() {
@@ -13,11 +24,20 @@ class ObjectManager {
 		return list;
 	}
 
+	MoveSelectedObjects(x, y) {
+		for (obj of this.objects){
+			if (obj.selected){
+				obj.pos.x += x;
+				obj.pos.y += y;
+			}
+		}
+	}
+
 	// On mouseclick, this function may be called to find which rectangle is clicked
 	SelectObject(x, y) {
 		let blocksize = config.blocksize;
 
-		for (i=this.objects.length-1; i >= 0; i--) {
+		for (let i=this.objects.length-1; i >= 0; i--) {
 			obj = this.objects[i].PointSelect(x, y);
 			if (null != obj){
 				return obj;
@@ -131,7 +151,60 @@ class ObjectManager {
 			}
 		}	
 		this.objects = newlist;
-	}		
+	}	
+	
+	PrintCurrentSetup(){
+
+		function EscapeQuotes(text){
+			return text.replace('"', '\\"').replace("'", "\\'").replace(/\n/g,'\\n');
+		}
+
+		let output = ""
+		let template = ''
+
+		for (obj of this.objects){
+			template = `
+				obj = newRect(ObjectList.objects);
+				obj.pos.y = ${obj.pos.y};
+				obj.pos.x = ${obj.pos.x};
+				obj.width = ${obj.width};
+				obj.height = ${obj.height};
+				obj.bgcolor = '${obj.bgcolor}';
+				obj.text = "${EscapeQuotes(obj.text)}";
+				obj.textsize = ${obj.textsize};
+				obj.draw_arrow = "${obj.draw_arrow}";
+				obj.border_radius = "${obj.border_radius}";
+				
+				`
+			output += template
+		}
+
+		// remove tabs from string
+		let tab = RegExp("\\t", "g");
+		output = output.replace(tab, '')
+
+
+
+		return output;
 	}
+
+	DownloadCurrentSetup(filename) {
+		let text = this.PrintCurrentSetup()
+
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+		element.setAttribute('download', filename);
+		
+		element.style.display = 'none';
+		document.body.appendChild(element);
+		
+		element.click();
+		
+		document.body.removeChild(element);
+		  	
+	}
+	
+
+}
 
 	

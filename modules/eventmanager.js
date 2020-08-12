@@ -22,7 +22,10 @@ var eventmgmt = {
 	},
 	selectionrect: null,
 	input_selected: null,
-	objIncrement: 0
+	objIncrement: 0,
+	persistent_choices: {
+		draw_grid: true
+	}
 }
 
 var viewport = {
@@ -56,7 +59,7 @@ function OnCanvasKeyDown(event) {
 			break;
 		case 17:
 			eventmgmt.pressed.ctrl = true;
-			break;					
+			break;				
 	}
 }
 function OnCanvasKeyUp(event) {
@@ -66,8 +69,6 @@ function OnCanvasKeyUp(event) {
 	switch (event.keyCode) {
 		case 32: // space
 			eventmgmt.pressed.spacebar = false;
-			objs = ObjectList.GetSelectedObjects();
-			console.log(ObjectList.objects.length);
 			break;
 		case 16:
 			eventmgmt.pressed.shift = false;
@@ -81,13 +82,16 @@ function OnCanvasKeyUp(event) {
 		case 66: // B
 			ObjectList.BringSelectedObjectToBack();
 			break;		
-		case 67: // C
+		case 67: // C (copy)
+		case 68: // D (duplicate)
 			for (obj of ObjectList.GetSelectedObjects()) {
 				copyRect(obj);
 			}	
 			break;
-		case 68: // D
+		case 46: // Del (delete)	
+		case 82: // R (remove)
 			ObjectList.DeleteSelectedObject();
+			RefreshObjectEditPane();
 			break;
 
 		case 69: // ayyy (E)
@@ -100,8 +104,26 @@ function OnCanvasKeyUp(event) {
 			obj = newRect(Clipboard.objects);
 			obj.mouse_anchor = {x:-config.blocksize, y:-config.blocksize};
 			break;
+		case 71: // G
+			eventmgmt.persistent_choices.draw_grid = (! eventmgmt.persistent_choices.draw_grid);
+			break;
+		case 83: // S
+			ObjectList.DownloadCurrentSetup("save_file.js");
+			break;
+		case 37: // left
+			ObjectList.MoveSelectedObjects(-1,0);
+			break;
+		case 39: // right
+			ObjectList.MoveSelectedObjects(1,0);
+			break;		
+		case 38: // top
+			ObjectList.MoveSelectedObjects(0,-1);
+			break;
+		case 40: // bottom
+			ObjectList.MoveSelectedObjects(0,1);
+			break;					
 		default:
-			alert(event.keyCode);				
+			//alert(event.keyCode);				
 	}
 }
 
@@ -122,7 +144,10 @@ function OnCanvasLMBD(event)
 		return;
 	}
 	cursor = getMousePos(event);
-	obj = ObjectList.SelectObject(cursor.x, cursor.y);
+
+	if (eventmgmt.pressed.spacebar == false){
+		obj = ObjectList.SelectObject(cursor.x, cursor.y);
+	}
 
 	// Save info 
 	eventmgmt.pressed.leftmousebutton = true;
@@ -245,12 +270,13 @@ function OnCanvasMouseMove(event) {
 	space_is_pressed = eventmgmt.pressed.spacebar;
 	ctrl_is_pressed = eventmgmt.pressed.ctrl;
 
-
+	// set selectionrect
 	if (ctrl_is_pressed) {
 		eventmgmt.selectionrect = [x1, y1, dx, dy];
 		return;
 	}
 
+	// pan
 	if (space_is_pressed || null == obj) {
 		viewport_origin = eventmgmt.viewport_origin;
 
@@ -259,7 +285,9 @@ function OnCanvasMouseMove(event) {
 		viewport.y = viewport_origin.y + dy;
 	}	
 
-	if (null != obj){
+	// move object
+	if (null != obj && space_is_pressed == false){
+
 		object_origin = eventmgmt.object_origin;
 		if (Math.abs(dx) >= 0.5*blocksize || Math.abs(dy) >= 0.5*blocksize) {
 			// drag

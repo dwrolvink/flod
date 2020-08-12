@@ -24,7 +24,7 @@ function OnWindowResize() {
 	UpdateScreen();
 }
 
-setInterval(draw, 15);
+window.requestAnimationFrame(draw);
 
 
 

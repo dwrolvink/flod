@@ -9,6 +9,11 @@ function LoadObjectEditPane(obj){
 		document.getElementById("objectEditPane").style.visibility = 'visible';
 		for (el of elements) {
 			el.value = obj[el.id];
+
+			// color needs extra steps
+			if (el.id == 'bgcolor'){
+				document.querySelector('#bgcolor').jscolor.fromString(el.value)
+			}
 		}
 	}
 	// reset
@@ -50,7 +55,9 @@ function ProcessInput(el){
 		
 	}
 
+	/*
 	if (el.id == 'bgcolor') {
+		
 		color = el.value.split(',');
 		// limit rbg
 		for (i=0; i < 3 ;i++){
@@ -68,10 +75,12 @@ function ProcessInput(el){
 		else if (color[3] < 0){
 			color[3] = 0;
 		}
+		
 
 		obj[el.id] = color;
 		el.value = color;
 	}
+	*/
 
 	else {
 		obj[el.id] = el.value;
@@ -92,17 +101,36 @@ function ArmInputFields() {
 	el = document.getElementById('text');
 	el.addEventListener("keyup",    function(){ProcessInput(this)}      );
 
+	el = document.getElementById('draw_arrow');
+	el.addEventListener("change",    function(){ProcessInput(this)}      );	
+
+	el = document.getElementById('border_radius');
+	el.addEventListener("change",    function(){ProcessInput(this)}      );		
+
 	// arm nudgers
 	el = document.getElementById('+height');
-	el.addEventListener("click",    function(){ChangeObjectHeight(this, 2)}      );
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, 2)}      );
 
 	el = document.getElementById('-height');
-	el.addEventListener("click",    function(){ChangeObjectHeight(this, -2)}      );
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, -2)}      );
+
+	el = document.getElementById('+width');
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, 2)}      );
+
+	el = document.getElementById('-width');
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, -2)}      );	
+
+	el = document.getElementById('+textsize');
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, 1)}      );
+
+	el = document.getElementById('-textsize');
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, -1)}      );	
 }
 	
-function ChangeObjectHeight(el, amount){
+function ChangeObjectNumericProperty(el, amount){
 	obj = eventmgmt.input_object;
-	input = document.getElementById('height');
-	input.value = +input.value + amount;
-	obj.height+= amount;
+	property = el.id.replace('+','').replace('-','');
+	input = document.getElementById(property);
+	input.value = Number(input.value) + amount;
+	obj[property] = Number(input.value);
 }
