@@ -1,6 +1,6 @@
 #  Flodraw
 
-App to easily make simple diagrams in your browser.
+`App built to easily make simple diagrams in your browser.`
 
 #### Support
 This site is built in/for the latest version of Firefox on Linux Manjaro. Other browser support is not tested/developed for. Might work though, who knows.
