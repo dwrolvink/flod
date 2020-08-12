@@ -52,9 +52,11 @@ function draw() {
 
 		ctx.fillStyle   = bg;
 
+		// if there is an arrow, centered text will have to move a little
+		// to have it look good
+		let text_skew_x = 0;
 
 		
-
 		if (obj.draw_arrow == 'none') 
 		{	
 			// draw normal rect
@@ -82,6 +84,9 @@ function draw() {
 			let mult = 1.2
 
 			if (obj.draw_arrow == 'right') {
+
+				text_skew_x = -0.5*rect.h;
+
 				ctx.beginPath();
 				ctx.moveTo(left, top); // top left
 				ctx.lineTo(right-y_half*mult, top); // top right
@@ -92,6 +97,9 @@ function draw() {
 				ctx.fill();
 			}
 			else if (obj.draw_arrow == 'left') {
+
+				text_skew_x = 0.5*rect.h;
+
 				ctx.beginPath();
 				ctx.lineTo(left, top+y_half); // corner
 				ctx.moveTo(left+y_half*mult, top); // top left
@@ -100,9 +108,34 @@ function draw() {
 				ctx.lineTo(left+y_half*mult, bottom); // left bottom
 				ctx.lineTo(left, top+y_half); // corner
 				ctx.fill();
-			}				
+			}			
+			else if (obj.draw_arrow == 'left_down') {
+				// draw rect
+				ctx.fillRect(x, y, w, h); 
+
+				// draw triangle
+				a = 2*blocksize;
+				let left_triangle = left;
+				let right_triangle = left + a;
+				let top_triangle = bottom - 0.5;
+				let bottom_triangle = bottom + 0.5*a;
+				let middle_triangle = left + 0.5*a
+
+				ctx.beginPath();
+				// rect
+				ctx.moveTo(left, top);
+				ctx.lineTo(right, top);
+				ctx.lineTo(right, bottom);
+				// triangle
+				ctx.lineTo(right_triangle, bottom);
+				ctx.lineTo(middle_triangle, bottom_triangle); // corner
+				ctx.lineTo(left, bottom); 
+				ctx.fill();
+			}					
 			else if (obj.draw_arrow == 'right_narrow') {
 				let stalk_h = 0.2*blocksize;
+
+				text_skew_x = -0.5*rect.h;
 
 				ctx.beginPath();
 				ctx.moveTo(left, (top + y_half) - stalk_h); // topleft stalk
@@ -114,8 +147,11 @@ function draw() {
 				ctx.lineTo(left, (top + y_half) + stalk_h); // bottomleft stalk
 				ctx.lineTo(left, (top + y_half) - stalk_h); // topleft stalk
 				ctx.fill();
-			}
+			}		
 			else if (obj.draw_arrow == 'left_narrow') {
+
+				text_skew_x = 0.5*rect.h;
+
 				let stalk_h = 0.2*blocksize;
 				let top_stalk =  (top + y_half) - stalk_h;
 				let bottom_stalk = (top + y_half) + stalk_h;
@@ -136,9 +172,21 @@ function draw() {
 		}
 
 		// draw text
+		// ------------------------------------------------------------
+		lines = obj.text.split('\n');
+
 		ctx.fillStyle   = obj.textcolor;
 		textsize = fontsize*obj.textsize/10;
+		lineheight = textsize*1.1;
 		ctx.font = `${textsize}px Arial`;
+		
+		// get width of text
+		let text_width = 0;
+		for (line of lines) {
+			if (ctx.measureText(line).width > text_width){
+				text_width = ctx.measureText(line).width;
+			}
+		}
 
 		// calculate padding
 		let padding_left = b;
@@ -149,16 +197,27 @@ function draw() {
 		}
 
 		
-		lineheight = textsize*1.1;
+		// calculate text location
+		let text_top = y + textsize + padding_top;
+		let text_left = x;
+
+		if (obj.text_align == "top-center"){
+			text_left = x + ((w + text_skew_x)  - text_width)/2
+		}
+		else if (obj.text_align == "top-left" || obj.text_align == "none"){
+			text_left = x + padding_left;
+		}		
+
+		// draw text
 		l = 0;
-		lines = obj.text.split('\n');
 		for (line of lines) {
-			ctx.fillText(line, x+padding_left, y+textsize+(l*lineheight)+padding_top);
+			ctx.fillText(line, text_left, text_top+(l*lineheight));
 			l++; 
 		}
 		
 
 		// draw selection highlight
+		// -------------------------------------------------------------
 		if (obj.selected){
 			// square pattern
 			if (window.config.blocksize > 6) {

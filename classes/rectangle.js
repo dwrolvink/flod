@@ -18,6 +18,7 @@ class Rectangle {
 		this.mouse_anchor = null;
 		this.draw_arrow = 'none';
 		this.border_radius = 0;
+		this.text_align = "top-left";
 	}
 
 	get absrect(){
@@ -108,6 +109,7 @@ function copyRect(obj) {
 	newobj.textsize    = obj.textsize;
 	newobj.draw_arrow  = obj.draw_arrow;
 	newobj.border_radius  = obj.border_radius;
+	newobj.text_align  = obj.text_align;
 
 	rect = newobj.absrect;
 	cx = rect.x1 - eventmgmt.mousepos.current.x;

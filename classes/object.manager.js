@@ -174,6 +174,7 @@ class ObjectManager
 				obj.textsize = ${obj.textsize};
 				obj.draw_arrow = "${obj.draw_arrow}";
 				obj.border_radius = "${obj.border_radius}";
+				obj.text_align = "${obj.text_align}";
 				
 				`
 			output += template

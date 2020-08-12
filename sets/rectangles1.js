@@ -9,6 +9,7 @@ obj.text = "   Backend.Vault";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -21,6 +22,7 @@ obj.text = "   Integrator";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -33,6 +35,7 @@ obj.text = "  Backend.Vault";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -41,10 +44,11 @@ obj.pos.x = 38;
 obj.width = 10;
 obj.height = 52;
 obj.bgcolor = 'rgba(13,5,50,1)';
-obj.text = "   Frontend";
+obj.text = "Requestor";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -57,6 +61,7 @@ obj.text = "";
 obj.textsize = 6;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -69,6 +74,7 @@ obj.text = "";
 obj.textsize = 6;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -81,6 +87,7 @@ obj.text = "";
 obj.textsize = 6;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -90,9 +97,10 @@ obj.width = 14;
 obj.height = 6;
 obj.bgcolor = 'rgba(14,75,213,1)';
 obj.text = "Get_Decrypt_Key";
-obj.textsize = 7;
+obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -105,6 +113,7 @@ obj.text = "uuid";
 obj.textsize = 7;
 obj.draw_arrow = "right";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -117,6 +126,7 @@ obj.text = "Decrypt Secret";
 obj.textsize = 15;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -129,6 +139,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -141,6 +152,7 @@ obj.text = "Get_Secret";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -153,6 +165,7 @@ obj.text = "success: bool\nmessage: string\nreturn_code: int\npayload: [secret]"
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -165,6 +178,7 @@ obj.text = "id, uuid, vault_id,\nname, description,\ncypher_string,\nowner_id";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -177,6 +191,7 @@ obj.text = "vault_id != 0?";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -189,6 +204,7 @@ obj.text = "owner_id == 0? ";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -201,6 +217,7 @@ obj.text = "";
 obj.textsize = 6;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -213,6 +230,7 @@ obj.text = "owner_id == session[\'user_id']";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -225,6 +243,7 @@ obj.text = "";
 obj.textsize = 5;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -237,6 +256,7 @@ obj.text = "fallthrough";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -249,6 +269,7 @@ obj.text = "Decrypt_Secret";
 obj.textsize = 9;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -261,6 +282,7 @@ obj.text = "return_code != 200?";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -273,6 +295,7 @@ obj.text = "return_code != 200?";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -285,6 +308,7 @@ obj.text = "secret_value";
 obj.textsize = 6;
 obj.draw_arrow = "left";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -297,6 +321,7 @@ obj.text = "key = result";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -309,6 +334,7 @@ obj.text = "secret = payload";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -321,6 +347,7 @@ obj.text = "secret_value = payload";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -333,6 +360,7 @@ obj.text = "success: bool\nmessage: string\nreturn_code: int\npayload: [decrypt_
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -345,6 +373,7 @@ obj.text = "string";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -357,6 +386,7 @@ obj.text = "return_code != 200?";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -369,6 +399,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -381,6 +412,7 @@ obj.text = "Decrypt ";
 obj.textsize = 9;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -393,6 +425,7 @@ obj.text = "success: bool\nmessage: string\nreturn_code: int\npayload: [secret_v
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -405,6 +438,7 @@ obj.text = "string";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -417,6 +451,7 @@ obj.text = "error: 404";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -429,6 +464,7 @@ obj.text = "secret";
 obj.textsize = 7;
 obj.draw_arrow = "right";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -441,6 +477,7 @@ obj.text = "";
 obj.textsize = 6;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -453,6 +490,7 @@ obj.text = "error: rc";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -465,6 +503,7 @@ obj.text = "error: 501";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -477,6 +516,7 @@ obj.text = "self.secret_key";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "10";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -489,6 +529,7 @@ obj.text = "error: 403";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -501,6 +542,7 @@ obj.text = "session[\'secret_key']";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "10";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -513,6 +555,7 @@ obj.text = "";
 obj.textsize = 6;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -525,6 +568,7 @@ obj.text = "error: 500";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -537,6 +581,7 @@ obj.text = "uuid";
 obj.textsize = 7;
 obj.draw_arrow = "right";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -545,10 +590,11 @@ obj.pos.x = 66;
 obj.width = 12;
 obj.height = 4;
 obj.bgcolor = 'rgba(0,188,255,1)';
-obj.text = "secret.cipher_string\nkey";
-obj.textsize = 6;
+obj.text = "secret.cipher_string,\nkey";
+obj.textsize = 5;
 obj.draw_arrow = "right";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -561,6 +607,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -573,6 +620,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -585,6 +633,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -597,6 +646,7 @@ obj.text = "   Backend.Profile";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -609,6 +659,7 @@ obj.text = "   User";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -621,6 +672,7 @@ obj.text = "Generate User Private Key at Login (session[\'secret_key'])";
 obj.textsize = 15;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -633,6 +685,7 @@ obj.text = "   Frontend";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -645,6 +698,7 @@ obj.text = "username\npassword";
 obj.textsize = 7;
 obj.draw_arrow = "right";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -657,6 +711,7 @@ obj.text = "render_login_page";
 obj.textsize = 7;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -669,6 +724,7 @@ obj.text = "username\npassword";
 obj.textsize = 7;
 obj.draw_arrow = "right";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -681,6 +737,7 @@ obj.text = "Authenticate";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -693,6 +750,7 @@ obj.text = "success: bool\nmessage: string\nreturn_code: int\npayload: [user_id]
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -705,6 +763,7 @@ obj.text = "int";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -717,6 +776,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -729,6 +789,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -741,6 +802,7 @@ obj.text = "user_id = payload";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -753,6 +815,7 @@ obj.text = "return_code != 200?";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -765,6 +828,7 @@ obj.text = "";
 obj.textsize = 6;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -777,6 +841,7 @@ obj.text = "error: 403";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -789,6 +854,7 @@ obj.text = "Login_user";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -801,6 +867,7 @@ obj.text = "username\npassword\nuser_id";
 obj.textsize = 6;
 obj.draw_arrow = "right";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -813,6 +880,7 @@ obj.text = "password";
 obj.textsize = 7;
 obj.draw_arrow = "right";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -825,18 +893,20 @@ obj.text = "Generate_user_private_key";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
-obj.pos.y = 102;
-obj.pos.x = 126;
-obj.width = 14;
+obj.pos.y = 99;
+obj.pos.x = 123;
+obj.width = 10;
 obj.height = 2;
-obj.bgcolor = 'rgba(0,188,255,0.25)';
+obj.bgcolor = 'rgba(0,188,255,0.6)';
 obj.text = "self.secret_key";
 obj.textsize = 7;
-obj.draw_arrow = "left";
+obj.draw_arrow = "left_down";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -849,6 +919,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "right_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -861,6 +932,7 @@ obj.text = "user_private_key";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -873,6 +945,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -885,6 +958,7 @@ obj.text = "   Session";
 obj.textsize = 8;
 obj.draw_arrow = "none";
 obj.border_radius = "30";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -897,6 +971,7 @@ obj.text = "user_private_key = result";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -909,6 +984,7 @@ obj.text = "user_private_key";
 obj.textsize = 6;
 obj.draw_arrow = "right";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -921,6 +997,7 @@ obj.text = "session[\'user_private_key']";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -933,6 +1010,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -941,10 +1019,11 @@ obj.pos.x = 56;
 obj.width = 6;
 obj.height = 2;
 obj.bgcolor = 'rgba(35,142,41,1)';
-obj.text = "    OK";
+obj.text = "OK";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -957,6 +1036,7 @@ obj.text = "(...)";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -969,6 +1049,7 @@ obj.text = "";
 obj.textsize = 7;
 obj.draw_arrow = "left_narrow";
 obj.border_radius = "0";
+obj.text_align = "top-left";
 
 
 obj = newRect(ObjectList.objects);
@@ -981,6 +1062,7 @@ obj.text = "Home page";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "5";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -993,6 +1075,7 @@ obj.text = "self.secret_key";
 obj.textsize = 7;
 obj.draw_arrow = "left";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -1005,4 +1088,5 @@ obj.text = "(...)";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
+obj.text_align = "top-center";
 

@@ -4,6 +4,8 @@ function LoadObjectEditPane(obj){
 	eventmgmt.input_object = obj;
 	elements =  document.getElementsByClassName('input');
 
+	ResetDropDowns();
+
 	// load object
 	if (obj != null) {
 		document.getElementById("objectEditPane").style.visibility = 'visible';
@@ -23,6 +25,12 @@ function LoadObjectEditPane(obj){
 			el.value = '';
 		}
 	}
+}
+
+function ResetDropDowns(){
+	// custom
+	document.querySelector('#draw_arrow [value="none"]').selected = true;
+	document.querySelector('#text_align [value="none"]').selected = true;
 }
 
 function RefreshObjectEditPane(){
@@ -105,6 +113,9 @@ function ArmInputFields() {
 	el.addEventListener("change",    function(){ProcessInput(this)}      );	
 
 	el = document.getElementById('border_radius');
+	el.addEventListener("change",    function(){ProcessInput(this)}      );	
+	
+	el = document.getElementById('text_align');
 	el.addEventListener("change",    function(){ProcessInput(this)}      );		
 
 	// arm nudgers

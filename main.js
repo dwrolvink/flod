@@ -10,10 +10,12 @@ var Clipboard  = new ObjectManager();
 
 // MouseScroll event
 window.onload = function() {
+	// Firefox
 	if(window.addEventListener) {
 		document.addEventListener('DOMMouseScroll', AdjustZoom, false);
 		document.addEventListener('onwheel', AdjustZoom, false);
 	}
+	// Chrome
 	window.onmousewheel=AdjustZoom;
 
 	UpdateScreen()
