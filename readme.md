@@ -1,9 +1,6 @@
 #  Flodraw
-- Objects can be defined in /sets/
-- Currently only /sets/rectangles1.js is loaded. You can manually load a different file in index.html (bottom of the page).
-- Well defined classes for *actual* objects can be placed in /classes/
-- The rectangle class currently does a lot, maybe too much. 
-- Separate files for separate functionality (like scrolling) can be placed in /modules/
+
+App to easily make simple diagrams in your browser.
 
 #### Support
 This site is built in/for the latest version of Firefox on Linux Manjaro. Other browser support is not tested/developed for. Might work though, who knows.
@@ -35,4 +32,9 @@ If you have this file open in a text editor, and open the downloaded file with t
 | S  | Download current state (see saving progress) | 
 
 
-
+#### Notes
+- Objects can be defined in /sets/
+- Currently only /sets/rectangles1.js is loaded. You can manually load a different file in index.html (bottom of the page).
+- Well defined classes for *actual* objects can be placed in /classes/
+- The rectangle class currently does a lot, maybe too much. 
+- Separate files for separate functionality (like scrolling) can be placed in /modules/
