@@ -5,6 +5,8 @@ class Rectangle {
 		this.bgcolor = 'rgba(0, 102, 255, 1)';
 		this.bordercolor = "#AAAAAA"; 
 		this.textcolor = "#FFFFFF";
+		this.border_radius = 0;
+		this.border_thickness = 0;
 		this.textsize = 8;
 		this.padding = 0.2;
 		this.pos = {
@@ -17,12 +19,11 @@ class Rectangle {
 		this.text = "Hello there";
 		this.mouse_anchor = null;
 		this.draw_arrow = 'none';
-		this.border_radius = 0;
 		this.text_align = "top-left";
 	}
 
 	get absrect(){
-		blocksize = config.blocksize;
+		blocksize = viewport.blocksize;
 
 		let xpos = this.pos.x  * blocksize + viewport.x;
 		let ypos = this.pos.y  * blocksize + viewport.y;
@@ -42,7 +43,7 @@ class Rectangle {
 	}
 
 	set absrect(rect) {
-		blocksize = config.blocksize;
+		blocksize = viewport.blocksize;
 
 		this.pos.x = (rect[0] - viewport.x) / blocksize;
 		this.pos.y = (rect[1] - viewport.y) / blocksize;
@@ -99,9 +100,9 @@ function newRect(list) {
 function copyRect(obj) {
 	newobj = new Rectangle();
 	newobj.bgcolor     = obj.bgcolor;
+	newobj.textcolor   = obj.textcolor;
 	newobj.text        = obj.text;
 	newobj.bordercolor = obj.bordercolor;
-	newobj.textcolor   = obj.textcolor;
 	newobj.pos.x       = obj.pos.x;
 	newobj.pos.y       = obj.pos.y;
 	newobj.width       = obj.width;
@@ -109,6 +110,7 @@ function copyRect(obj) {
 	newobj.textsize    = obj.textsize;
 	newobj.draw_arrow  = obj.draw_arrow;
 	newobj.border_radius  = obj.border_radius;
+	newobj.border_thickness = obj.border_thickness;
 	newobj.text_align  = obj.text_align;
 
 	rect = newobj.absrect;

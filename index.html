@@ -12,7 +12,7 @@
 		<style>
 			#mainCanvas {
 				border:1px solid #d3d3d3;
-				background-color:rgb(31, 33, 43);
+				background-color:rgba(31,48,106,1);
 				/* background-color:rgb(252, 70, 212) */
 			}
 			body {
@@ -38,6 +38,18 @@
 				background-color:rgb(29, 29, 37);
 				color:white;
 			}
+
+
+			#pageSettings {
+				visibility: hidden;
+				position: absolute;
+				left: 0px;
+				top: 100px;
+				padding:10px;
+				border: 1px solid gray;
+				background-color:rgb(29, 29, 37);
+				color:white;
+			}			
 
 			.inputrow {
 				width:260px;
@@ -68,6 +80,18 @@
 		Your browser does not support the canvas element.
 		</canvas>
 
+		<div id="pageSettings" >
+			<table>
+				<tr>
+					<td class="namecol"><label>bgcolor</label></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="page_bgcolor" class="input"></td>
+				</tr><tr>
+					<td class="namecol"><label>grid color</label></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="page_gridcolor" class="input"></td>
+				</tr>	
+			</table>
+		</div>	
+
 		<div id="objectEditPane" >
 
 			<table>
@@ -91,6 +115,19 @@
 				</tr><tr>
 					<td class="namecol"><label>bgcolor</label></td>
 					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="bgcolor" class="input"></td>
+				</tr><tr>
+					<td class="namecol"><label>Text color</label></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="textcolor" class="input"></td>
+				</tr><tr>
+					<td class="namecol"><label>Border color</label></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="bordercolor" class="input"></td>
+				</tr><tr>
+					<td class="namecol"><label>Border thickness</label></td>
+					<td>
+						<input type="text" id="border_thickness" class="input">
+						<input type="submit" id="+border_thickness" class="nudge" value="+">
+						<input type="submit" id="-border_thickness" class="nudge" value="-">
+					</td>
 				</tr><tr>
 					<td class="namecol"><label>Textsize</label></td>
 					<td>

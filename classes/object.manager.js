@@ -35,7 +35,7 @@ class ObjectManager
 
 	// On mouseclick, this function may be called to find which rectangle is clicked
 	SelectObject(x, y) {
-		let blocksize = config.blocksize;
+		let blocksize = viewport.blocksize;
 
 		for (let i=this.objects.length-1; i >= 0; i--) {
 			obj = this.objects[i].PointSelect(x, y);
@@ -162,6 +162,17 @@ class ObjectManager
 		let output = ""
 		let template = ''
 
+		// export eventmgmt
+		output +=  `let eventmgmt_json = \`${JSON.stringify(eventmgmt)}\`; 
+					var eventmgmt = JSON.parse(eventmgmt_json);
+					let viewport_json = \`${JSON.stringify(viewport)}\`;
+					var viewport = JSON.parse(viewport_json);
+		
+		`
+
+
+		// export objects
+
 		for (obj of this.objects){
 			template = `
 				obj = newRect(ObjectList.objects);
@@ -170,10 +181,12 @@ class ObjectManager
 				obj.width = ${obj.width};
 				obj.height = ${obj.height};
 				obj.bgcolor = '${obj.bgcolor}';
+				obj.textcolor = '${obj.textcolor}';
 				obj.text = "${EscapeQuotes(obj.text)}";
 				obj.textsize = ${obj.textsize};
 				obj.draw_arrow = "${obj.draw_arrow}";
 				obj.border_radius = "${obj.border_radius}";
+				obj.border_thickness = "${obj.border_thickness}";
 				obj.text_align = "${obj.text_align}";
 				
 				`

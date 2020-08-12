@@ -51,45 +51,16 @@ function SelectInput(input){
 function ProcessInput(el){
 	obj = eventmgmt.input_object;
 
-	if (['width', 'height'].includes(el.id) ) {
-		
-		if (+el.value % 2){
-			obj[el.id] = +el.value + 1;
-			el.value = obj[el.id];
-		}
-		else {
-			obj[el.id] = el.value
-		}
-		
+	// page settings
+	if (el.id == 'page_bgcolor') {
+		eventmgmt.persistent_choices.page_bgcolor = el.value;
+		document.getElementById("mainCanvas").style.backgroundColor = el.value;
 	}
+	else if (el.id == 'page_gridcolor') {
+		eventmgmt.persistent_choices.page_gridcolor = el.value;
+	}	
 
-	/*
-	if (el.id == 'bgcolor') {
-		
-		color = el.value.split(',');
-		// limit rbg
-		for (i=0; i < 3 ;i++){
-			if (color[i] > 250){
-				color[i] = 250;
-			}
-			else if (color[i] < 0){
-				color[i] = 0;
-			}
-		}
-		// limit a
-		if (color[3] > 1){
-			color[3] = 1;
-		}
-		else if (color[3] < 0){
-			color[3] = 0;
-		}
-		
-
-		obj[el.id] = color;
-		el.value = color;
-	}
-	*/
-
+	// object settings
 	else {
 		obj[el.id] = el.value;
 	}
@@ -105,7 +76,7 @@ function ArmInputFields() {
 		el.addEventListener("focusout", function(){SelectInput(null)}       );
 	}
 
-	// add responsiveness to select number of inputs
+	// object settings
 	el = document.getElementById('text');
 	el.addEventListener("keyup",    function(){ProcessInput(this)}      );
 
@@ -116,6 +87,13 @@ function ArmInputFields() {
 	el.addEventListener("change",    function(){ProcessInput(this)}      );	
 	
 	el = document.getElementById('text_align');
+	el.addEventListener("change",    function(){ProcessInput(this)}      );		
+
+	// page settings
+	el = document.getElementById('page_bgcolor');
+	el.addEventListener("change",    function(){ProcessInput(this)}      );	
+	
+	el = document.getElementById('page_gridcolor');
 	el.addEventListener("change",    function(){ProcessInput(this)}      );		
 
 	// arm nudgers
@@ -135,6 +113,12 @@ function ArmInputFields() {
 	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, 1)}      );
 
 	el = document.getElementById('-textsize');
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, -1)}      );	
+
+	el = document.getElementById('+border_thickness');
+	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, 1)}      );
+
+	el = document.getElementById('-border_thickness');
 	el.addEventListener("click",    function(){ChangeObjectNumericProperty(this, -1)}      );	
 }
 	

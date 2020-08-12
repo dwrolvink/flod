@@ -5,6 +5,7 @@ document.addEventListener("keydown", OnCanvasKeyDown);
 document.addEventListener("keyup",   OnCanvasKeyUp);
 document.addEventListener('contextmenu', OnRightClick);
 
+/*
 var eventmgmt = {
 	mousepos : {
 		at_lmbd : {x:0,y:0},
@@ -24,14 +25,21 @@ var eventmgmt = {
 	input_selected: null,
 	objIncrement: 0,
 	persistent_choices: {
-		draw_grid: true
+		draw_grid: true,
+		draw_help_text: true,
+		force_pan: true,
+		page_bgcolor: 'rgba(0,0,0,1)',
+		page_gridcolor: 'rgba(40,30,40,1)'
 	}
 }
-
+*/
+/*
 var viewport = {
 	x: 0,
-	y: 0
+	y: 0,
+	blocksize: 15
 }
+*/
 
 
 
@@ -102,7 +110,7 @@ function OnCanvasKeyUp(event) {
 			break;	
 		case 78: // N
 			obj = newRect(Clipboard.objects);
-			obj.mouse_anchor = {x:-config.blocksize, y:-config.blocksize};
+			obj.mouse_anchor = {x:-viewport.blocksize, y:-viewport.blocksize};
 			break;
 		case 71: // G
 			eventmgmt.persistent_choices.draw_grid = (! eventmgmt.persistent_choices.draw_grid);
@@ -121,6 +129,12 @@ function OnCanvasKeyUp(event) {
 			break;
 		case 40: // bottom
 			ObjectList.MoveSelectedObjects(0,1);
+			break;	
+		case 73: // I
+			eventmgmt.persistent_choices.force_pan = ! eventmgmt.persistent_choices.force_pan;
+			break;	
+		case 81: // Q
+			ToggleVisibility("pageSettings");	
 			break;					
 		default:
 			//alert(event.keyCode);				
@@ -143,35 +157,41 @@ function OnCanvasLMBD(event)
 	if (event.buttons != 1){
 		return;
 	}
-	cursor = getMousePos(event);
 
-	if (eventmgmt.pressed.spacebar == false){
-		obj = ObjectList.SelectObject(cursor.x, cursor.y);
-	}
+	// get cursor
+	cursor = getMousePos(event);
 
 	// Save info 
 	eventmgmt.pressed.leftmousebutton = true;
 	eventmgmt.mousepos.at_lmbd = cursor;
-	eventmgmt.object_clicked_on = obj;
 	eventmgmt.viewport_origin = {x: viewport.x, y: viewport.y};
-
-	if (null != obj) {
-		
-		if (obj.selected) { 
-			// save location of all selected objects
-			let list = [];
-			for (obj of ObjectList.objects){
-				if (obj.selected){
-					list.push({x: obj.pos.x, y: obj.pos.y});
+	
+	// handle click object
+	obj = null;
+	if (eventmgmt.pressed.spacebar == false && eventmgmt.persistent_choices.force_pan == false){
+		obj = ObjectList.SelectObject(cursor.x, cursor.y);
+	
+		if (obj != null) {
+			eventmgmt.object_clicked_on = obj;
+			
+			if (obj.selected) { 
+				// save location of all selected objects
+				let list = [];
+				for (obj of ObjectList.objects){
+					if (obj.selected){
+						list.push({x: obj.pos.x, y: obj.pos.y});
+					}
 				}
+				eventmgmt.object_origin = list;
 			}
-			eventmgmt.object_origin = list;
+			else {
+				// save location of one object
+				eventmgmt.object_origin = {x: obj.pos.x, y: obj.pos.y};
+			}
 		}
 		else {
-			// save location of one object
-			eventmgmt.object_origin = {x: obj.pos.x, y: obj.pos.y};
+			eventmgmt.object_clicked_on = null
 		}
-		
 	}
 } 
 
@@ -183,18 +203,33 @@ function OnCanvasLMBU(event)
 	
 
 	// Logic
-	let blocksize = config.blocksize;
-	let obj = eventmgmt.object_clicked_on;
+	let blocksize = viewport.blocksize;
+
+	// panning
+	
+
+	// handle object manipulation
+	let obj = null;
+	let obj_manipulation_is_off = (eventmgmt.pressed.spacebar == true || eventmgmt.persistent_choices.force_pan == true);
+	let obj_manipulation_is_on = ! obj_manipulation_is_off;
+
+	if (obj_manipulation_is_on) {
+		obj = eventmgmt.object_clicked_on;
+	}
 
 	// case: selecting with ctrl (rect)
-	if (eventmgmt.selectionrect != null) {
-		if (!eventmgmt.pressed.shift){
-			ObjectList.DeselectAllObjects([]);
+	if (obj_manipulation_is_on) 
+	{
+		if (eventmgmt.selectionrect != null) 
+		{
+			if (!eventmgmt.pressed.shift){
+				ObjectList.DeselectAllObjects([]);
+			}
+			ObjectList.SelectObjectsByRect(eventmgmt.selectionrect);
+			RefreshObjectEditPane()
+			eventmgmt.selectionrect = null;
+			return;
 		}
-		ObjectList.SelectObjectsByRect(eventmgmt.selectionrect);
-		RefreshObjectEditPane()
-		eventmgmt.selectionrect = null;
-		return;
 	}
 
 	// case 1: dragging
@@ -202,7 +237,8 @@ function OnCanvasLMBU(event)
 	if (isDrag) {
 		// dragging processing is done in OnCanvasMouseMove
 		return;
-	}
+	}	
+
 
 	// case: click (and clipboard is full): Place clipboard content
 	if (Clipboard.objects.length > 0){
@@ -223,7 +259,8 @@ function OnCanvasLMBU(event)
 	}
 
 	// case 2: click object = (de)select object
-	if (null != obj) {
+	if (null != obj && obj_manipulation_is_on) 
+	{
 		n = ObjectList.GetSelectedObjects().length;
 
 		// deselect all, unless shift is pressed
@@ -239,10 +276,11 @@ function OnCanvasLMBU(event)
 		}
 
 		RefreshObjectEditPane()	
+		return;
 	}
 
 	// case: clicked grid
-	else {
+	if (obj_manipulation_is_on) {
 		ObjectList.DeselectAllObjects([]);
 		RefreshObjectEditPane()
 	}
@@ -251,13 +289,16 @@ function OnCanvasLMBU(event)
 
 function OnCanvasMouseMove(event) {
 
+	let obj_manipulation_is_off = (eventmgmt.pressed.spacebar == true || eventmgmt.persistent_choices.force_pan == true);
+	let obj_manipulation_is_on = ! obj_manipulation_is_off;
+
 	window.eventmgmt.mousepos.current = getMousePos(event);
 
 	if (!eventmgmt.pressed.leftmousebutton){
 		return;
 	}
 
-	blocksize = config.blocksize;
+	blocksize = viewport.blocksize;
 	cursor = getMousePos(event);
 
 	// Get drag motion
@@ -277,7 +318,7 @@ function OnCanvasMouseMove(event) {
 	}
 
 	// pan
-	if (space_is_pressed || null == obj) {
+	if (space_is_pressed || null == obj || eventmgmt.persistent_choices.force_pan) {
 		viewport_origin = eventmgmt.viewport_origin;
 
 		// change viewport
@@ -286,7 +327,7 @@ function OnCanvasMouseMove(event) {
 	}	
 
 	// move object
-	if (null != obj && space_is_pressed == false){
+	if (null != obj && obj_manipulation_is_on){
 
 		object_origin = eventmgmt.object_origin;
 		if (Math.abs(dx) >= 0.5*blocksize || Math.abs(dy) >= 0.5*blocksize) {
@@ -342,19 +383,19 @@ function AdjustZoom(event) {
 		delta = -event.detail / 2;
 	}			
 	
-	b1 = window.config.blocksize;
+	b1 = window.viewport.blocksize;
 
 	if (delta > 0) {
-		window.config.blocksize *= 1.1;
+		window.viewport.blocksize *= 1.1;
 	}
 	else {
-		window.config.blocksize *= 0.9;
+		window.viewport.blocksize *= 0.9;
 	}
 
 	// ------------------------------------------------------------------------------------
 	// this block makes sure that when zooming in/out, viewport will stay centered around 
 	// the cursor
-	b2 = window.config.blocksize;
+	b2 = window.viewport.blocksize;
 	cursor = window.eventmgmt.mousepos.current;
 	
 	addon_KeepViewportCentered(b1, b2, cursor);

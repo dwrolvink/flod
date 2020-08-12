@@ -1,10 +1,30 @@
+function draw_border(obj){
+	if (obj.border_thickness == 0){ return; }
+	
+	ctx.lineWidth = (parseFloat(viewport.blocksize)/10.0) * parseFloat(obj.border_thickness);
+	//if (ctx.lineWidth < 1){ return; }
+
+	ctx.strokeStyle = obj.bordercolor;
+	ctx.lineJoin = "round";
+
+	if (obj.draw_arrow != 'none'){
+		ctx.stroke();
+	}
+	else {
+		let rect = obj.absrect;
+		ctx.strokeRect(rect.x1, rect.y1, rect.w, rect.h);
+	}
+}
+
 function draw() {
 
-	blocksize = config.blocksize;
+	blocksize = viewport.blocksize;
 	let fontsize = Math.floor(1.8 * blocksize);
 
+	page_bgcolor = eventmgmt.persistent_choices.page_bgcolor;
+
 	// Clear screen
-	ctx.fillStyle   = "#000000";
+	ctx.fillStyle   = page_bgcolor;
 	ctx.clearRect(0, 0, canvas.width,canvas.height);
 
 	// Shortcuts
@@ -12,11 +32,11 @@ function draw() {
 
 	
 	// Draw grid
-	if (window.config.blocksize > 5 && eventmgmt.persistent_choices.draw_grid) {
+	if (window.viewport.blocksize > 5 && eventmgmt.persistent_choices.draw_grid) {
 		w = Math.floor(canvas.width / blocksize);
 		h = Math.floor(canvas.height / blocksize);
 		b = blocksize;
-		ctx.strokeStyle = "rgb(36, 38, 48)";
+		ctx.strokeStyle = eventmgmt.persistent_choices.page_gridcolor;
 		ctx.lineWidth = 1;
 		
 		ctx.beginPath();
@@ -30,12 +50,16 @@ function draw() {
 			ctx.lineTo(w*b  + viewport.x%b, i*b + viewport.y%b);
 		}
 
+		ctx.closePath();
+
 		ctx.stroke(); 
 	}
 	
 		
 	// Print info
-	PrintInfo();
+	if (eventmgmt.persistent_choices.draw_help_text){
+		PrintInfo();
+	}
 
 	// Draw objects
 	for (obj of ObjectList.objects) 
@@ -62,17 +86,45 @@ function draw() {
 			// draw normal rect
 			if (obj.border_radius != 0)
 			{
+				// rounded corners only work for non arrowed boxes
 				ctx.lineJoin = "round";
-				cornerRadius = obj.border_radius;
-				ctx.lineWidth = cornerRadius;
-				ctx.strokeStyle = bg;
+				cornerRadius = obj.border_radius * blocksize/10;
 
-				ctx.strokeRect(x+(cornerRadius/2), y+(cornerRadius/2), w-cornerRadius, h-cornerRadius);
-				ctx.fillRect(x+(cornerRadius/2), y+(cornerRadius/2), w-cornerRadius, h-cornerRadius);	
+				// border
+				corrected_border_thickness = parseFloat(obj.border_thickness) * blocksize/10.0;
+				ctx.lineWidth = corrected_border_thickness;
+				
+				
+				ctx.strokeStyle = obj.bordercolor;
+				
+				ctx.beginPath();
+
+				ctx.moveTo(x + cornerRadius, y);
+
+				ctx.lineTo(x + w - cornerRadius, y);
+				ctx.arcTo(x + w, y,      x + w, y + cornerRadius,     cornerRadius);
+
+				ctx.lineTo(x + w, y + h - cornerRadius);
+				ctx.arcTo(x + w, y + h     , x + w - cornerRadius, y + h, cornerRadius);
+
+				ctx.lineTo(x + cornerRadius, y + h);
+				ctx.arcTo(x, y + h     , x , y + h - cornerRadius, cornerRadius);
+
+				ctx.lineTo(x, y + cornerRadius);
+				ctx.arcTo(x, y, x + cornerRadius, y, cornerRadius);
+
+				ctx.closePath();
+
+				if (corrected_border_thickness > 0.01){
+					ctx.stroke();
+				}
+				ctx.fill();
+ 
 			}
 			// draw normal rect
 			else {
 				ctx.fillRect(x, y, w, h); 
+				draw_border(obj);
 			}
 		}
 		else {
@@ -94,7 +146,10 @@ function draw() {
 				ctx.lineTo(right-y_half*mult, bottom); // right bottom
 				ctx.lineTo(left, bottom); // left bottom
 				ctx.lineTo(left, top); // top left
+				ctx.closePath();
 				ctx.fill();
+
+				draw_border(obj);
 			}
 			else if (obj.draw_arrow == 'left') {
 
@@ -220,7 +275,7 @@ function draw() {
 		// -------------------------------------------------------------
 		if (obj.selected){
 			// square pattern
-			if (window.config.blocksize > 6) {
+			if (window.viewport.blocksize > 6) {
 				for (i=0; i < obj.height; i++) {
 					for (j=0; j < obj.width; j++) {
 						if ((i%2 + j%2)%2 > 0) {
@@ -292,23 +347,34 @@ function rgba(r,g,b,a) {
 }
 
 function PrintInfo(){
+	// config
 	ctx.font = '12px Arial';
 	ctx.fillStyle   = 'white';
+
+	// placement
 	let l = 1; let lh = 20; left = canvas.width - 200;
-	ctx.fillText('Blocksize: '+window.config.blocksize, left, l*lh); l+=2; 
+
+	// text
+	if (eventmgmt.persistent_choices.force_pan){
+		ctx.fillStyle   = 'rgba(231,206,0,1)';
+		ctx.fillText('Press I to edit this diagram! ', left, l*lh); l+=2; 
+		ctx.fillStyle   = 'white';
+	}
+
+	ctx.fillText('Scroll: zoom              ', left, l*lh); l++;
+	ctx.fillText('Drag grid: pan            ', left, l*lh); l++;
+	ctx.fillText('Hold space: force pan     ', left, l*lh); l+=2;	
 	
 	ctx.fillText('Press S to download config   ', left, l*lh); l+=2;
 	
-	ctx.fillText('Drag grid: pan            ', left, l*lh); l++;
-	ctx.fillText('Hold space: force pan     ', left, l*lh); l++;
-	ctx.fillText('Scroll: zoom              ', left, l*lh); l+=2;
 
 	ctx.fillText('Ctrl + drag: select multiple objects', left, l*lh); l++;
 	ctx.fillText('Hold shift to add to current selection', left, l*lh); l++;
 	ctx.fillText('Drag object to move it    ', left, l*lh); l++;
 	ctx.fillText('Selected objects move together    ', left, l*lh); l+=2;
 
-	ctx.fillText('Press G to toggle grid    ', left, l*lh); l+=2;
+	ctx.fillText('Press G to toggle grid    ', left, l*lh); l++;
+	ctx.fillText('Press H to toggle help text    ', left, l*lh); l+=2;
 
 	ctx.fillText('Press N for new object    ', left, l*lh); l++;
 	ctx.fillText('Click object to (de)select', left, l*lh); l++;
@@ -323,6 +389,8 @@ function PrintInfo(){
 		ctx.fillText('Use arrows to move 1 block ', left, l*lh); l++;
 		ctx.fillStyle   = 'white';
 	}	
+
+	ctx.fillText('Blocksize: '+window.viewport.blocksize, left, l*lh); l+=2; 
 
 	ctx.font = '14px Arial';
 	ctx.fillText('This app is only tested for Firefox and might not work as intended on other browsers', 20, canvas.height-20 );
