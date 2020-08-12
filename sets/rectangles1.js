@@ -191,7 +191,7 @@ obj.text = "vault_id != 0?";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -204,7 +204,7 @@ obj.text = "owner_id == 0? ";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -230,7 +230,7 @@ obj.text = "owner_id == session[\'user_id']";
 obj.textsize = 5;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -252,11 +252,11 @@ obj.pos.x = 78;
 obj.width = 14;
 obj.height = 6;
 obj.bgcolor = 'rgba(14,75,213,1)';
-obj.text = "fallthrough";
-obj.textsize = 5;
+obj.text = "";
+obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -282,7 +282,7 @@ obj.text = "return_code != 200?";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -295,7 +295,7 @@ obj.text = "return_code != 200?";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -321,7 +321,7 @@ obj.text = "key = result";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -334,7 +334,7 @@ obj.text = "secret = payload";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -347,7 +347,7 @@ obj.text = "secret_value = payload";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -386,7 +386,7 @@ obj.text = "return_code != 200?";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
-obj.text_align = "top-left";
+obj.text_align = "top-center";
 
 
 obj = newRect(ObjectList.objects);
@@ -1085,6 +1085,19 @@ obj.width = 14;
 obj.height = 2;
 obj.bgcolor = 'rgba(0,19,182,0.17)';
 obj.text = "(...)";
+obj.textsize = 6;
+obj.draw_arrow = "none";
+obj.border_radius = "0";
+obj.text_align = "top-center";
+
+
+obj = newRect(ObjectList.objects);
+obj.pos.y = 40;
+obj.pos.x = 78;
+obj.width = 14;
+obj.height = 2;
+obj.bgcolor = 'rgba(0,19,182,0.17)';
+obj.text = "fall-through";
 obj.textsize = 6;
 obj.draw_arrow = "none";
 obj.border_radius = "0";
