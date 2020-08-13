@@ -1,48 +1,66 @@
 
+// This file handles all the interface actions.
+// The interface are the forms to edit the object/page settings defined in index.html
 
-function LoadObjectEditPane(obj){
+
+// - Makes the object edit pane visible
+// - Loads the input with the current settings for the object.
+function OpenObjectEditPane(obj)
+{
+	// Make it globally known that we are editing this object
+	// This is used when we process the update events of the inputs.
 	eventmgmt.input_object = obj;
-	elements =  document.getElementsByClassName('input');
 
-	ResetDropDowns();
+	// Show object edit pane 
+	document.getElementById("objectEditPane").style.visibility = 'visible';	
 
-	// load object
-	if (obj != null) {
-		document.getElementById("objectEditPane").style.visibility = 'visible';
-		for (el of elements) {
-			el.value = obj[el.id];
+	// Get all elements in the object edit pane (per category)
+	input_elements =  document.getElementById("objectEditPane").getElementsByClassName('input');
+	select_elements =  document.getElementById("objectEditPane").getElementsByClassName('select');
+	color_elements =  document.getElementById("objectEditPane").getElementsByClassName('jscolor');
 
-			// color needs extra steps
-			if (el.id == 'bgcolor'){
-				document.querySelector('#bgcolor').jscolor.fromString(el.value)
-			}
-		}
+	// set input values
+	for (el of input_elements) {
+		el.value = obj[el.id];
 	}
-	// reset
+
+	// Set dropdown selected
+	for (el of select_elements) {
+		document.querySelector(`#${el.id} [value="${obj[el.id]}"]`).selected = true;
+	}
+
+	// jscolor fields need a separate call to update the color preview
+	for (el of color_elements) {
+		document.querySelector('#'+el.id).jscolor.fromString(obj[el.id])
+	}	
+}
+
+// Hides the object edit pane, and executes all actions that need to be done when 
+// the edit object pane is hidden
+function CloseObjectEditPane()
+{
+	// Update global record keeper
+	eventmgmt.input_object = null;
+
+	// Hide pane
+	document.getElementById("objectEditPane").style.visibility = 'hidden';
+}
+
+// Hide the ObjectEditPane if the number of selected objects != 1
+function RefreshObjectEditPane()
+{
+	if (ObjectList.GetAllSelectedObjects().length == 1) 
+	{
+		obj = ObjectList.GetAllSelectedObjects()[0];
+		OpenObjectEditPane(obj);
+	}
 	else {
-		document.getElementById("objectEditPane").style.visibility = 'hidden';
-		for (el of elements) {
-			el.value = '';
-		}
+		CloseObjectEditPane();
 	}
 }
 
-function ResetDropDowns(){
-	// custom
-	document.querySelector('#draw_arrow [value="none"]').selected = true;
-	document.querySelector('#text_align [value="none"]').selected = true;
-}
-
-function RefreshObjectEditPane(){
-	if (ObjectList.GetSelectedObjects().length == 1) {
-		obj = ObjectList.GetSelectedObjects()[0];
-		LoadObjectEditPane(obj);
-	}
-	else {
-		LoadObjectEditPane(null);
-	}
-}
-
+// When we are typing in the interface, we don't want to call any hotkeys
+// This function is a more readable wrapper for it's contents.
 function SelectInput(input){
 	eventmgmt.input_selected = input
 }
@@ -64,7 +82,6 @@ function ProcessInput(el){
 	else {
 		obj[el.id] = el.value;
 	}
-	
 }
 
 function ArmInputFields() {

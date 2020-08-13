@@ -1,20 +1,14 @@
 class ObjectManager 
 {
 	constructor(){
+		// all the objects will be stored here
 		this.objects = [];
-		this.iterations = [];
 	}
 
-	SaveState() {
-		this.iterations.push(JSON.stringify(this.objects)); 
-	}
-
-	RestoreState() {
-		this.objects = JSON.parse(this.iterations.pop());
-		UpdateScreen();
-	}
-
-	GetSelectedObjects() {
+	// Each object can be in a selected state. This means the user has
+	// selected the object (to move or delete it)
+	// This function gets all selected objects
+	GetAllSelectedObjects() {
 		let list = [];
 		for (obj of this.objects){
 			if (obj.selected){
@@ -24,6 +18,8 @@ class ObjectManager
 		return list;
 	}
 
+	// When the users drags when objects are selected, the objects are moved
+	// by the amount of the drag.
 	MoveSelectedObjects(x, y) {
 		for (obj of this.objects){
 			if (obj.selected){
@@ -33,12 +29,22 @@ class ObjectManager
 		}
 	}
 
-	// On mouseclick, this function may be called to find which rectangle is clicked
-	SelectObject(x, y) {
-		let blocksize = viewport.blocksize;
 
-		for (let i=this.objects.length-1; i >= 0; i--) {
+	// When clicking somewhere on the canvas, we need to check if there is
+	// an object under the cursor, and which one it is. If there are multiple
+	// overlapping objects, the first one is returned. The order of the objects
+	// can be controlled by using the "Send to back" and "Send to front" commands.
+
+	SelectObject(x, y) {
+		// Loop over all objects
+		for (let i=this.objects.length-1; i >= 0; i--) 
+		{
+			let obj = null;
+
+			// Each object is asked if the coordinates fall within its boundaries
 			obj = this.objects[i].PointSelect(x, y);
+
+			// If there is a match, the object will be returned
 			if (null != obj){
 				return obj;
 			}
@@ -46,22 +52,31 @@ class ObjectManager
 		return null;
 	}
 
-	SelectObjectsByRect(rect){
-		x1 = rect[0]+rect[2];
-		x2 = rect[0];
-		y1 = rect[1]+rect[3];
-		y2 = rect[1];
+
+	// Same as above, but it doesn't return at first match, and a rect is given
+	// instead of a point. It also doesn't check whether ANY part of the rect is 
+	// within its own rect, but whether one of its corners is contained within the
+	// given rect. This gives more control when selecting and is computationally easier.
+	SelectObjectsByRect(rect)
+	{
+		// rect = {x, y, w, h}
+		x1 = rect[0]; 
+		x2 = rect[0]+rect[2];
+		y1 = rect[1];
+		y2 = rect[1]+rect[3];
 
 		let xmax = greater(x1,x2);
 		let xmin = lesser(x1,x2);
 		let ymax = greater(y1,y2);
 		let ymin = lesser(y1,y2);
 
-		for (obj of this.objects) {
-			let x = obj.pos.x * blocksize + viewport.x;
-			let y = obj.pos.y * blocksize + viewport.y;
-			let w = obj.width  * blocksize;
-			let h = obj.height * blocksize;	
+		for (obj of this.objects) 
+		{
+			let obj_rect = obj.absrect;
+			let x = obj_rect.x1;
+			let y = obj_rect.y1;
+			let w = obj_rect.w
+			let h = obj_rect.h;
 
 			// Left
 			if (x < xmax && x > xmin) {
@@ -87,6 +102,9 @@ class ObjectManager
 			}
 		}	
 	}
+	// Used when having a multi-object selecting, and then clicking one object
+	// in that selection. This should deselect all, except for that one object.
+	// If you want to deselect all, pass an empty array as the exclusion argument.
 	DeselectAllObjects(exclusion) {
 		for (obj of this.objects) {
 			if (!(exclusion.includes(obj))) {
@@ -103,7 +121,7 @@ class ObjectManager
 		}
 	}	
 
-	DeleteSelectedObject() {
+	DeleteAllSelectedObjects() {
 		let newlist = []
 		for (obj of this.objects) {
 			if (!obj.selected) {
@@ -170,10 +188,9 @@ class ObjectManager
 		
 		`
 
-
 		// export objects
-
-		for (obj of this.objects){
+		for (obj of this.objects)
+		{
 			template = `
 				obj = newRect(ObjectList.objects);
 				obj.pos.y = ${obj.pos.y};
@@ -196,8 +213,6 @@ class ObjectManager
 		// remove tabs from string
 		let tab = RegExp("\\t", "g");
 		output = output.replace(tab, '')
-
-
 
 		return output;
 	}

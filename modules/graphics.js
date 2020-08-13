@@ -385,7 +385,7 @@ function PrintInfo(){
 	ctx.fillText('Press N for new object    ', left, l*lh); l++;
 	ctx.fillText('Click object to (de)select', left, l*lh); l++;
 
-	if (ObjectList.GetSelectedObjects().length > 0){
+	if (ObjectList.GetAllSelectedObjects().length > 0){
 		ctx.fillStyle   = '#66aa66';
 		ctx.fillText('Press F to bring to front', left, l*lh); l++;
 		ctx.fillText('Press B to bring to back ', left, l*lh); l++; 
@@ -420,5 +420,8 @@ function SetCanvasSize(){
 
 function UpdateScreen(){
 	SetCanvasSize();
-	draw();
+}
+
+function OnWindowResize() {
+	UpdateScreen();
 }

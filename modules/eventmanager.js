@@ -1,10 +1,6 @@
-canvas.addEventListener("mousedown", OnCanvasLMBD, false);
-canvas.addEventListener("mouseup",   OnCanvasLMBU, false);
-canvas.addEventListener("mousemove", OnCanvasMouseMove, false);
-document.addEventListener("keydown", OnCanvasKeyDown);
-document.addEventListener("keyup",   OnCanvasKeyUp);
-document.addEventListener('contextmenu', OnRightClick);
 
+// The commented-out data used to live here, now it get's imported with the diagram
+// so that we have one coherent game state to be loaded at start-up.
 /*
 var eventmgmt = {
 	mousepos : {
@@ -42,17 +38,9 @@ var viewport = {
 */
 
 
-
-function OnRightClick(event) {
-
-	event.preventDefault();
-
-	cursor = getMousePos(event);
-
-	if (obj = ObjectList.SelectObject(cursor.x, cursor.y)){
-		obj.Click(2);
-	}
-}
+// ===========================================================================
+//                          KEYS
+// ===========================================================================
 
 function OnCanvasKeyDown(event) {
 	if (eventmgmt.input_selected != null){
@@ -92,13 +80,13 @@ function OnCanvasKeyUp(event) {
 			break;		
 		case 67: // C (copy)
 		case 68: // D (duplicate)
-			for (obj of ObjectList.GetSelectedObjects()) {
+			for (obj of ObjectList.GetAllSelectedObjects()) {
 				copyRect(obj);
 			}	
 			break;
 		case 46: // Del (delete)	
 		case 82: // R (remove)
-			ObjectList.DeleteSelectedObject();
+			ObjectList.DeleteAllSelectedObjects();
 			RefreshObjectEditPane();
 			break;
 
@@ -144,6 +132,11 @@ function OnCanvasKeyUp(event) {
 	}
 }
 
+
+// ===========================================================================
+//                          MOUSE POS
+// ===========================================================================
+
 function getMousePos(event) {
 	// Get relative x, y
 	var xpos = event.x;
@@ -154,6 +147,27 @@ function getMousePos(event) {
 
 	return {x: xpos, y:ypos}
 }
+
+
+
+
+// ===========================================================================
+//                          MOUSE CLICK
+// ===========================================================================
+
+// Call object's click function for object specific actions
+function OnRightClick(event) {
+
+	event.preventDefault();
+
+	cursor = getMousePos(event);
+
+	if (obj = ObjectList.SelectObject(cursor.x, cursor.y)){
+		obj.Click(2);
+	}
+}
+
+
 
 function OnCanvasLMBD(event)
 {
@@ -264,7 +278,7 @@ function OnCanvasLMBU(event)
 	// case 2: click object = (de)select object
 	if (null != obj && obj_manipulation_is_on) 
 	{
-		n = ObjectList.GetSelectedObjects().length;
+		n = ObjectList.GetAllSelectedObjects().length;
 
 		// deselect all, unless shift is pressed
 		if (!eventmgmt.pressed.shift){
@@ -290,17 +304,30 @@ function OnCanvasLMBU(event)
 
 } 
 
+
+// ===========================================================================
+//                          MOUSE DRAG
+// ===========================================================================
+
+
 function OnCanvasMouseMove(event) {
 
+	// Update current mouse position
+	window.eventmgmt.mousepos.current = getMousePos(event);
+
+	// Dragging?
+	if (eventmgmt.pressed.leftmousebutton){
+		HandleDrag()
+	}
+}
+
+function HandleDrag()
+{
+	// Some drag actions can only be done if we are in edit mode, and the spacebar (force pan) is off
 	let obj_manipulation_is_off = (eventmgmt.pressed.spacebar == true || eventmgmt.persistent_choices.force_pan == true);
 	let obj_manipulation_is_on = ! obj_manipulation_is_off;
 
-	window.eventmgmt.mousepos.current = getMousePos(event);
-
-	if (!eventmgmt.pressed.leftmousebutton){
-		return;
-	}
-
+	// shortcuts
 	blocksize = viewport.blocksize;
 	cursor = getMousePos(event);
 
@@ -311,7 +338,6 @@ function OnCanvasMouseMove(event) {
 
 	// Test if object is being dragged
 	obj = eventmgmt.object_clicked_on;
-	space_is_pressed = eventmgmt.pressed.spacebar;
 	ctrl_is_pressed = eventmgmt.pressed.ctrl;
 
 	// set selectionrect
@@ -321,7 +347,8 @@ function OnCanvasMouseMove(event) {
 	}
 
 	// pan
-	if (space_is_pressed || null == obj || eventmgmt.persistent_choices.force_pan) {
+	if (null == obj || obj_manipulation_is_off) 
+	{
 		viewport_origin = eventmgmt.viewport_origin;
 
 		// change viewport
@@ -330,15 +357,20 @@ function OnCanvasMouseMove(event) {
 	}	
 
 	// move object
-	if (null != obj && obj_manipulation_is_on){
-
+	if (null != obj && obj_manipulation_is_on)
+	{
+		// get place where object started at at the beginning of dragging
 		object_origin = eventmgmt.object_origin;
-		if (Math.abs(dx) >= 0.5*blocksize || Math.abs(dy) >= 0.5*blocksize) {
-			// drag
-			// move all selected objects
+
+		// Lockstep to grid
+		if (Math.abs(dx) >= 0.5*blocksize || Math.abs(dy) >= 0.5*blocksize) 
+		{
+
+			// move all selected objects 
+			// (when dragging a selected object, more might be selected, so move them all together)
 			if (obj.selected) {
 				let i = 0;
-				for (obj of ObjectList.GetSelectedObjects()) {
+				for (obj of ObjectList.GetAllSelectedObjects()) {
 					obj.pos.x = object_origin[i].x + Math.round(dx / blocksize);
 					obj.pos.y = object_origin[i].y + Math.round(dy / blocksize);
 					i++;
@@ -371,10 +403,14 @@ function GetMouseDrag(cursor){
 	return [dx, dy, isDrag];
 }
 
+
+// ===========================================================================
+//                          MOUSE SCROLL
+// ===========================================================================
+
 function AdjustZoom(event) {
 	var delta = 0;
 	
-
 	if (!event) event = window.event;
 
 	// normalize the delta
@@ -409,7 +445,7 @@ function AdjustZoom(event) {
 function addon_KeepViewportCentered(b1, b2, cursor){
 
 	// Objects are listed with relative coordinates. These are then translated to absolute 
-	// coordinates. This way, we can change easily move around and zoom in.
+	// coordinates. This way, we can easily move around and zoom in.
 	//The relative position is translated to absolute position as follows:
 	// abs(x,y) = rel(x,y) * blocksize + viewport(x,y)
 
@@ -433,8 +469,7 @@ function addon_KeepViewportCentered(b1, b2, cursor){
 	driftx = cxrel*(b2-b1);
 	drifty = cyrel*(b2-b1);
 	
-	// I'm not sure why, but we need to adjust for the change in zoom before applying the drift.
-	// I stumbled upon this, I don't have a formula to underpin it.
+	// Apply drift
 	viewport.x -= driftx;
 	viewport.y -= drifty;
 }
