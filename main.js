@@ -1,20 +1,22 @@
 // SET GLOBALS
 // ----------------------------------------------------------
-var canvas = document.getElementById("mainCanvas");
-var ctx = canvas.getContext("2d");
+let app = new App();
 
-// Main list of drawable Objects
-var ObjectList = new ObjectManager();
-var Clipboard  = new ObjectManager();
+// Shortcuts
+let screen = app.screen;
+let ctx = screen.ctx;
+let viewport = screen.viewport;
+let ObjectMngr = app.ObjectManager;
 
+app.Init();
 
 
 // SET EVENTS
 // ==========================================================
 // Link DOM events to eventmanager.js functions
-canvas.addEventListener("mousedown", OnCanvasLMBD, false);
-canvas.addEventListener("mouseup",   OnCanvasLMBU, false);
-canvas.addEventListener("mousemove", OnCanvasMouseMove, false);
+screen.canvas.addEventListener("mousedown", OnCanvasMouseDown, false);
+screen.canvas.addEventListener("mouseup",   OnCanvasMouseUp, false);
+screen.canvas.addEventListener("mousemove", OnCanvasMouseMove, false);
 document.addEventListener("keydown", OnCanvasKeyDown);
 document.addEventListener("keyup",   OnCanvasKeyUp);
 document.addEventListener('contextmenu', OnRightClick);
@@ -36,7 +38,7 @@ window.onload = function() {
 	ArmInputFields();
 
 	// Set screen size
-	UpdateScreen()
+	screen.UpdateScreen()
 
 	// Start the draw loop
 	window.requestAnimationFrame(draw);

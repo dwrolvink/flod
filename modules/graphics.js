@@ -1,53 +1,48 @@
-function draw_border(obj){
-	if (obj.border_thickness == 0){ return; }
-	
-	ctx.lineWidth = (parseFloat(viewport.blocksize)/10.0) * parseFloat(obj.border_thickness);
-	//if (ctx.lineWidth < 1){ return; }
+// graphics.js does all the drawing. Objects may have their own draw function.
+// The canvas management is done in screen.js (app.screen). (Includes zoom, panning, scrolling)
 
-	ctx.strokeStyle = obj.bordercolor;
-	ctx.lineJoin = "round";
 
-	if (obj.draw_arrow != 'none'){
-		ctx.stroke();
-	}
-	else {
-		let rect = obj.absrect;
-		ctx.strokeRect(rect.x1, rect.y1, rect.w, rect.h);
-	}
-}
 
 function draw() {
 
-	blocksize = viewport.blocksize;
+	// shortcuts
+	let canvas = screen.canvas;
+
+	let blocksize = viewport.blocksize;
+	let b = blocksize;
+
 	let fontsize = Math.floor(1.8 * blocksize);
 
-	page_bgcolor = eventmgmt.persistent_choices.page_bgcolor;
+	let page_bgcolor = app.state.persistent_choices.page_bgcolor;
+	let page_gridcolor = app.state.persistent_choices.page_gridcolor;
+
+	// toggles
+	let cmd_draw_grid = app.state.persistent_choices.draw_grid;
 
 	// Clear screen
 	ctx.fillStyle   = page_bgcolor;
 	ctx.clearRect(0, 0, canvas.width,canvas.height);
+	ctx.fillRect(0, 0, canvas.width,canvas.height);
 
-	// Shortcuts
-	let b = blocksize;
-
-	
 	// Draw grid
-	if (window.viewport.blocksize > 5 && eventmgmt.persistent_choices.draw_grid) {
-		w = Math.floor(canvas.width / blocksize);
-		h = Math.floor(canvas.height / blocksize);
-		b = blocksize;
-		ctx.strokeStyle = eventmgmt.persistent_choices.page_gridcolor;
-		ctx.lineWidth = 1;
+	if (blocksize > 5 && cmd_draw_grid) 
+	{
+		let w = Math.floor(canvas.width / blocksize);
+		let h = Math.floor(canvas.height / blocksize);
+
+		ctx.strokeStyle = page_gridcolor;
+		ctx.lineWidth = 0.1 * parseFloat(blocksize);
 		
 		ctx.beginPath();
-		
+
+
 		for (i=0; i < w+2; i++) { // vertical lines
-			ctx.moveTo(i*b + viewport.x%b, -1*b + viewport.y%b);
-			ctx.lineTo(i*b + viewport.x%b, h*b  + viewport.y%b);
+			ctx.moveTo(i*b + viewport.x%b, -b + viewport.y%b);
+			ctx.lineTo(i*b + viewport.x%b, canvas.height + b + viewport.y%b);
 		}
 		for (i=-1; i < h+2; i++) { // horizontal lines
 			ctx.moveTo(-1*b + viewport.x%b, i*b + viewport.y%b);
-			ctx.lineTo(w*b  + viewport.x%b, i*b + viewport.y%b);
+			ctx.lineTo(canvas.width + b  + viewport.x%b, i*b + viewport.y%b);
 		}
 
 		ctx.closePath();
@@ -57,12 +52,12 @@ function draw() {
 	
 		
 	// Print info
-	if (eventmgmt.persistent_choices.draw_help_text){
+	if (app.state.persistent_choices.draw_help_text){
 		PrintInfo();
 	}
 
 	// Draw objects
-	for (obj of ObjectList.objects) 
+	for (obj of ObjectMngr.objects) 
 	{ 
 		// draw rect
 		bg = obj.bgcolor;
@@ -124,7 +119,7 @@ function draw() {
 			// draw normal rect
 			else {
 				ctx.fillRect(x, y, w, h); 
-				draw_border(obj);
+				obj.DrawBorder(obj);
 			}
 		}
 		else {
@@ -149,7 +144,7 @@ function draw() {
 				ctx.closePath();
 				ctx.fill();
 
-				draw_border(obj);
+				obj.DrawBorder();
 			}
 			else if (obj.draw_arrow == 'left') {
 
@@ -275,7 +270,7 @@ function draw() {
 		// -------------------------------------------------------------
 		if (obj.selected){
 			// square pattern
-			if (window.viewport.blocksize > 6) {
+			if (screen.viewport.blocksize > 6) {
 				for (i=0; i < obj.height; i++) {
 					for (j=0; j < obj.width; j++) {
 						if ((i%2 + j%2)%2 > 0) {
@@ -297,19 +292,19 @@ function draw() {
 		}	
 		
 		// draw selectionrect
-		if (null != eventmgmt.selectionrect) {
+		if (null != app.state.selectionrect) {
 			ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
 			ctx.lineWidth = 1;
-			sr = eventmgmt.selectionrect;
+			sr = app.state.selectionrect;
 			ctx.strokeRect(sr[0], sr[1], sr[2], sr[3]);
 		}
 	}
 
 	// Draw clipboard
-	for (obj of Clipboard.objects) 
+	for (obj of app.clipboard.objects) 
 	{ 
 		// Set cliboard objects to follow cursor		
-		cursor = eventmgmt.mousepos.current;
+		cursor = app.state.mousepos.current;
 		ma     = obj.mouse_anchor;
 		obj.pos.x = Math.round((cursor.x + ma.x - viewport.x) / blocksize);
 		obj.pos.y = Math.round((cursor.y + ma.y - viewport.y) / blocksize);
@@ -339,6 +334,11 @@ function draw() {
 		}
 	}	
 
+	// Print image requested
+	if (app.state.print_image){
+		app.screen.PrintObject_callback();
+	}	
+
 	window.requestAnimationFrame(draw);
 }
 
@@ -352,16 +352,20 @@ function PrintInfo(){
 	ctx.fillStyle   = 'white';
 
 	// placement
-	let l = 1; let lh = 20; left = canvas.width - 200;
+	let l = 1; let lh = 20; left = screen.canvas.width - 200;
 
 	// text
 	ctx.fillStyle   = 'rgba(171,255,0,1)';
 	ctx.fillText('https://github.com/dwrolvink/flod', left, l*lh); l+=2; 
 
-	if (eventmgmt.persistent_choices.force_pan){
+	if (app.state.persistent_choices.force_pan){
 		ctx.fillStyle   = 'rgba(231,206,0,1)';
-		ctx.fillText('Press I to edit this diagram! ', left, l*lh); l+=2; 
-		
+		ctx.fillText('Press I to turn on edit mode! ', left, l*lh); l+=2; 
+	} else {
+		ctx.fillStyle   = 'rgba(255,164,62,1)';
+		ctx.fillText('Press I to exit edit mode ', left, l*lh); l++; 
+		ctx.fillText('Press Z to undo changes', left, l*lh); l++; 
+		ctx.fillText('Press Y to redo changes', left, l*lh); l+=2; 
 	}
 
 	ctx.fillStyle   = 'white';
@@ -370,13 +374,16 @@ function PrintInfo(){
 	ctx.fillText('Drag grid: pan            ', left, l*lh); l++;
 	ctx.fillText('Hold space: force pan     ', left, l*lh); l+=2;	
 	
-	ctx.fillText('Press S to download config   ', left, l*lh); l+=2;
+	ctx.fillText('Press S to save to session  ', left, l*lh); l+=2;
 	
 
 	ctx.fillText('Ctrl + drag: select multiple objects', left, l*lh); l++;
 	ctx.fillText('Hold shift to add to current selection', left, l*lh); l++;
 	ctx.fillText('Drag object to move it    ', left, l*lh); l++;
 	ctx.fillText('Selected objects move together    ', left, l*lh); l+=2;
+
+	ctx.fillText('Press E to deselect all objects   ', left, l*lh); l++;
+	ctx.fillText('Press Esc to close all panes & empty clipboard', left, l*lh); l+=2;	
 
 	ctx.fillText('Press G to toggle grid    ', left, l*lh); l++;
 	ctx.fillText('Press Q to page settings   ', left, l*lh); l++;
@@ -385,7 +392,7 @@ function PrintInfo(){
 	ctx.fillText('Press N for new object    ', left, l*lh); l++;
 	ctx.fillText('Click object to (de)select', left, l*lh); l++;
 
-	if (ObjectList.GetAllSelectedObjects().length > 0){
+	if (ObjectMngr.GetAllSelectedObjects().length > 0){
 		ctx.fillStyle   = '#66aa66';
 		ctx.fillText('Press F to bring to front', left, l*lh); l++;
 		ctx.fillText('Press B to bring to back ', left, l*lh); l++; 
@@ -396,32 +403,11 @@ function PrintInfo(){
 		ctx.fillStyle   = 'white';
 	}	
 
-	ctx.fillText('Blocksize: '+window.viewport.blocksize, left, l*lh); l+=2; 
+	ctx.fillText('x: '+viewport.x, left, l*lh); l++; 
+	ctx.fillText('y: '+viewport.y, left, l*lh); l++; 
+	ctx.fillText('Blocksize: '+viewport.blocksize, left, l*lh); l++; 
 
 	ctx.font = '14px Arial';
-	ctx.fillText('This app is only tested for Firefox and might not work as intended on other browsers', 20, canvas.height-20 );
+	ctx.fillText('This app is only tested for Firefox and might not work as intended on other browsers', 20, screen.canvas.height-20 );
 }
 
-function getClientSize() {
-	var e = window, a = 'inner';
-	if ( !( 'innerWidth' in window ) )
-	{
-		e = document.documentElement || document.body;
-		a = 'client';
-	}
-	return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
-}
-
-function SetCanvasSize(){
-	dimensions = getClientSize();
-	canvas.width = dimensions.width -2;
-	canvas.height = dimensions.height -2;
-}
-
-function UpdateScreen(){
-	SetCanvasSize();
-}
-
-function OnWindowResize() {
-	UpdateScreen();
-}

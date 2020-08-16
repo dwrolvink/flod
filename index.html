@@ -2,12 +2,7 @@
 	<head>
 		<title>Flod</title>
 		<meta charset="UTF-8">
-		<script src="config.js"></script>
-		<script src="modules/helperfuncs.js" ></script>
-		
-		<script src="modules/graphics.js"></script>
-
-		
+	
 
 		<style>
 			#mainCanvas {
@@ -32,11 +27,33 @@
 				visibility: hidden;
 				position: absolute;
 				right: 0px;
-				top: 500px;
-				padding:10px;
+				top: 0px;
+				padding: 0px;
+				height: 100vh;
 				border: 1px solid gray;
-				background-color:rgb(29, 29, 37);
+				background-color:rgba(13,5,50,1);
 				color:white;
+			}
+
+			table {
+				margin: 1rem;
+				margin-bottom: 2rem;
+			}
+
+			.pane_header {
+				width:100%;
+				background-color: rgba(19,7,75,1);
+				color:white;
+				padding:5px;
+				padding-left:1rem;
+				margin: 0rem;
+			}
+
+			#objectEditPane input[type=submit]{
+				background-color: rgba(0,188,255,0.1);
+				padding:2px;
+				border: none;
+				color: rgba(0,188,255,1);
 			}
 
 
@@ -68,7 +85,7 @@
 				padding-right:10px;
 			}
 			.nudge {
-				width: 10px;
+				width: 15px;
 			}
 		</style>
 	</head>
@@ -89,11 +106,16 @@
 					<td class="namecol"><label>grid color</label></td>
 					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="page_gridcolor" class="input"></td>
 				</tr>	
+				<tr>
+					<td colspan="2">
+						<input type="submit" id="download_file" value="Backup Data" style="margin-top:10px" /> (Save to /sets/set1.js to set as default)
+					</td>
+				</tr>
 			</table>
 		</div>	
 
 		<div id="objectEditPane" >
-
+			<div class="pane_header">Edit object</div>
 			<table>
 				<tr>
 					<td class="namecol"><label>Text</label></td>
@@ -161,21 +183,45 @@
 						</select>
 					</td>
 				</tr>
+				<tr>
+					<td class="namecol"><label>Lock object</label></td>
+					<td>
+						<select id="locked" class="select">
+							<option value="true">True</option>
+							<option value="false">False</option>				
+						</select>
+					</td>
+				</tr>
 			</table>
+
+			<div class="pane_header">Actions</div>
+			<ul>
+			<li><input type="submit" id="print_object" value="Print Object" />
+			</ul>
 		</div>
 
+		
+		
+		<script src="modules/helperfuncs.js" ></script>
+		<script src="modules/graphics.js"></script>
 		<script src="modules/interface.js" ></script>
 		<script src="modules/object.manager.js"></script>
 		<script src="modules/eventmanager.js"></script>
+		<script src="modules/screen.js"></script>
 
 		<!-- Object types -->
 		<script src="classes/rectangle.js"></script>
 
+		<!-- Define starter diagram for when saved state is not present -->
+		<script src="sets/set1.js"></script>			
+
+		<!-- Central app -->
+		<script src="modules/app.js"></script>
+
 		<!-- Main start-off point -->
 		<script src="main.js"></script>
 
-		<!-- Load diagram -->
-		<script src="sets/rectangles1.js"></script>
+
 
 		<!-- Load plugins/external libraries -->		
 		<script src="ext/jscolor/jscolor.js"></script>

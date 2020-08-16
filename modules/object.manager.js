@@ -1,8 +1,24 @@
-class ObjectManager 
+class ObjectManager
 {
-	constructor(){
+	constructor(app)
+	{
+		this.app = app;
+
+		this.update_main_list = false;
+
 		// all the objects will be stored here
 		this.objects = [];
+	}
+
+	UpdateLinkedArray(){
+		// app.objects exists. In the case of the main object list, we want to preserve
+		// this shortcut. When we do deletions however, we often create new arrays (for speed 
+		// and brevity). This destroys the reference. This function can be called after pointing
+		// this.objects to a new array.
+
+		if (this.update_main_list){
+			this.app.objects = this.objects;
+		}
 	}
 
 	// Each object can be in a selected state. This means the user has
@@ -10,7 +26,7 @@ class ObjectManager
 	// This function gets all selected objects
 	GetAllSelectedObjects() {
 		let list = [];
-		for (obj of this.objects){
+		for (let obj of this.objects){
 			if (obj.selected){
 				list.push(obj);
 			}
@@ -20,9 +36,11 @@ class ObjectManager
 
 	// When the users drags when objects are selected, the objects are moved
 	// by the amount of the drag.
-	MoveSelectedObjects(x, y) {
+	MoveSelectedObjects(x, y) 
+	{
 		for (obj of this.objects){
 			if (obj.selected){
+				//update_state = true;
 				obj.pos.x += x;
 				obj.pos.y += y;
 			}
@@ -49,6 +67,7 @@ class ObjectManager
 				return obj;
 			}
 		}
+
 		return null;
 	}
 
@@ -70,6 +89,8 @@ class ObjectManager
 		let ymax = greater(y1,y2);
 		let ymin = lesser(y1,y2);
 
+		let update_state = false;
+
 		for (obj of this.objects) 
 		{
 			let obj_rect = obj.absrect;
@@ -77,6 +98,10 @@ class ObjectManager
 			let y = obj_rect.y1;
 			let w = obj_rect.w
 			let h = obj_rect.h;
+
+			if (obj.locked){
+				continue;
+			}
 
 			// Left
 			if (x < xmax && x > xmin) {
@@ -122,13 +147,26 @@ class ObjectManager
 	}	
 
 	DeleteAllSelectedObjects() {
+		let update_state = false;
+
 		let newlist = []
 		for (obj of this.objects) {
 			if (!obj.selected) {
 				newlist.push(obj);
 			}
 		}
+
+		if (newlist.length != this.objects){
+			update_state = true;
+		}
+
 		this.objects = newlist;
+
+		app.state.input_object = null;
+
+		this.UpdateLinkedArray();
+		if (update_state){ this.app.SaveCurrentSetup(); }
+		
 	}
 
 	RemoveObjectFromList(list, object) {
@@ -154,6 +192,9 @@ class ObjectManager
 			}
 		}	
 		this.objects = newlist;
+
+		this.UpdateLinkedArray();
+		this.app.SaveCurrentSetup();
 	}
 
 	BringSelectedObjectToBack() {
@@ -169,71 +210,11 @@ class ObjectManager
 			}
 		}	
 		this.objects = newlist;
+
+		this.UpdateLinkedArray();
+		this.app.SaveCurrentSetup();
 	}	
 	
-	PrintCurrentSetup(){
-
-		function EscapeQuotes(text){
-			return text.replace('"', '\\"').replace("'", "\\'").replace(/\n/g,'\\n');
-		}
-
-		let output = ""
-		let template = ''
-
-		// export eventmgmt
-		output +=  `let eventmgmt_json = \`${JSON.stringify(eventmgmt)}\`; 
-					var eventmgmt = JSON.parse(eventmgmt_json);
-					let viewport_json = \`${JSON.stringify(viewport)}\`;
-					var viewport = JSON.parse(viewport_json);
-		
-		`
-
-		// export objects
-		for (obj of this.objects)
-		{
-			template = `
-				obj = newRect(ObjectList.objects);
-				obj.pos.y = ${obj.pos.y};
-				obj.pos.x = ${obj.pos.x};
-				obj.width = ${obj.width};
-				obj.height = ${obj.height};
-				obj.bgcolor = '${obj.bgcolor}';
-				obj.textcolor = '${obj.textcolor}';
-				obj.text = "${EscapeQuotes(obj.text)}";
-				obj.textsize = ${obj.textsize};
-				obj.draw_arrow = "${obj.draw_arrow}";
-				obj.border_radius = "${obj.border_radius}";
-				obj.border_thickness = "${obj.border_thickness}";
-				obj.text_align = "${obj.text_align}";
-				
-				`
-			output += template
-		}
-
-		// remove tabs from string
-		let tab = RegExp("\\t", "g");
-		output = output.replace(tab, '')
-
-		return output;
-	}
-
-	DownloadCurrentSetup(filename) {
-		let text = this.PrintCurrentSetup()
-
-		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-		element.setAttribute('download', filename);
-		
-		element.style.display = 'none';
-		document.body.appendChild(element);
-		
-		element.click();
-		
-		document.body.removeChild(element);
-		  	
-	}
-	
-
 }
 
 	

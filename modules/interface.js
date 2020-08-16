@@ -9,7 +9,7 @@ function OpenObjectEditPane(obj)
 {
 	// Make it globally known that we are editing this object
 	// This is used when we process the update events of the inputs.
-	eventmgmt.input_object = obj;
+	app.state.input_object = obj;
 
 	// Show object edit pane 
 	document.getElementById("objectEditPane").style.visibility = 'visible';	
@@ -26,7 +26,7 @@ function OpenObjectEditPane(obj)
 
 	// Set dropdown selected
 	for (el of select_elements) {
-		document.querySelector(`#${el.id} [value="${obj[el.id]}"]`).selected = true;
+		document.querySelector(`#${el.id} [value="${obj[el.id].toString()}"]`).selected = true;
 	}
 
 	// jscolor fields need a separate call to update the color preview
@@ -40,7 +40,9 @@ function OpenObjectEditPane(obj)
 function CloseObjectEditPane()
 {
 	// Update global record keeper
-	eventmgmt.input_object = null;
+	if (null != app.state.input_object){
+		app.state.input_object = null;
+	}
 
 	// Hide pane
 	document.getElementById("objectEditPane").style.visibility = 'hidden';
@@ -49,9 +51,9 @@ function CloseObjectEditPane()
 // Hide the ObjectEditPane if the number of selected objects != 1
 function RefreshObjectEditPane()
 {
-	if (ObjectList.GetAllSelectedObjects().length == 1) 
+	if (ObjectMngr.GetAllSelectedObjects().length == 1) 
 	{
-		obj = ObjectList.GetAllSelectedObjects()[0];
+		obj = ObjectMngr.GetAllSelectedObjects()[0];
 		OpenObjectEditPane(obj);
 	}
 	else {
@@ -62,26 +64,36 @@ function RefreshObjectEditPane()
 // When we are typing in the interface, we don't want to call any hotkeys
 // This function is a more readable wrapper for it's contents.
 function SelectInput(input){
-	eventmgmt.input_selected = input
+	app.state.input_selected = input
 }
 
 
 function ProcessInput(el){
-	obj = eventmgmt.input_object;
+	obj = app.state.input_object;
 
 	// page settings
 	if (el.id == 'page_bgcolor') {
-		eventmgmt.persistent_choices.page_bgcolor = el.value;
+		app.state.persistent_choices.page_bgcolor = el.value;
 		document.getElementById("mainCanvas").style.backgroundColor = el.value;
 	}
 	else if (el.id == 'page_gridcolor') {
-		eventmgmt.persistent_choices.page_gridcolor = el.value;
+		app.state.persistent_choices.page_gridcolor = el.value;
 	}	
 
 	// object settings
+	else if (el.id == 'locked') {
+		if (el.value == 'true'){
+			obj[el.id] = true;
+		}
+		else {
+			obj[el.id] = false;
+		}
+	}		
 	else {
 		obj[el.id] = el.value;
 	}
+
+	app.SaveCurrentSetup();
 }
 
 function ArmInputFields() {
@@ -106,12 +118,21 @@ function ArmInputFields() {
 	el = document.getElementById('text_align');
 	el.addEventListener("change",    function(){ProcessInput(this)}      );		
 
+	el = document.getElementById('locked');
+	el.addEventListener("change",    function(){ProcessInput(this)}      );		
+
 	// page settings
 	el = document.getElementById('page_bgcolor');
 	el.addEventListener("change",    function(){ProcessInput(this)}      );	
 	
 	el = document.getElementById('page_gridcolor');
 	el.addEventListener("change",    function(){ProcessInput(this)}      );		
+
+	el = document.getElementById('download_file');
+	el.addEventListener("click",    function(){app.DownloadCurrentSetup('set1.js')}      );	
+	
+	el = document.getElementById('print_object');
+	el.addEventListener("click",    function(){app.screen.PrintObject()}      );	
 
 	// arm nudgers
 	el = document.getElementById('+height');
@@ -140,9 +161,16 @@ function ArmInputFields() {
 }
 	
 function ChangeObjectNumericProperty(el, amount){
-	obj = eventmgmt.input_object;
+	obj = app.state.input_object;
 	property = el.id.replace('+','').replace('-','');
 	input = document.getElementById(property);
 	input.value = Number(input.value) + amount;
 	obj[property] = Number(input.value);
+}
+
+function ResetInterface(){
+	Clipboard.objects = [];
+	CloseObjectEditPane();
+	document.getElementById("pageSettings").style.visibility = "hidden";
+	app.ObjectManager.DeselectAllObjects([]);
 }
