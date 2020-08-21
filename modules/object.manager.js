@@ -53,17 +53,18 @@ class ObjectManager
 	// overlapping objects, the first one is returned. The order of the objects
 	// can be controlled by using the "Send to back" and "Send to front" commands.
 
-	SelectObject(x, y) {
+	SelectObject(type, x, y) {
 		// Loop over all objects
 		for (let i=this.objects.length-1; i >= 0; i--) 
 		{
+			
 			let obj = null;
 
 			// Each object is asked if the coordinates fall within its boundaries
 			obj = this.objects[i].PointSelect(x, y);
 
 			// If there is a match, the object will be returned
-			if (null != obj){
+			if (null != obj && obj.constructor.name == type){
 				return obj;
 			}
 		}
@@ -93,6 +94,8 @@ class ObjectManager
 
 		for (obj of this.objects) 
 		{
+			if (obj.constructor.name != 'Rectangle'){ continue; }
+
 			let obj_rect = obj.absrect;
 			let x = obj_rect.x1;
 			let y = obj_rect.y1;
@@ -149,23 +152,17 @@ class ObjectManager
 	DeleteAllSelectedObjects() {
 		let update_state = false;
 
-		let newlist = []
+
 		for (obj of this.objects) {
-			if (!obj.selected) {
-				newlist.push(obj);
+			if (obj.selected) {
+				obj.Kill();
 			}
 		}
 
-		if (newlist.length != this.objects){
-			update_state = true;
-		}
 
-		this.objects = newlist;
-
-		app.state.input_object = null;
 
 		this.UpdateLinkedArray();
-		if (update_state){ this.app.SaveCurrentSetup(); }
+		this.app.SaveCurrentSetup();
 		
 	}
 
@@ -214,7 +211,104 @@ class ObjectManager
 		this.UpdateLinkedArray();
 		this.app.SaveCurrentSetup();
 	}	
-	
-}
 
+	AddToList(object) {
+		// set unique id
+		let max_id = 1;
+		for (let obj of this.objects){
+			if (obj.id > max_id){ max_id = obj.id }
+		}
+		object.id = max_id + 1;
+
+		this.objects.push(object);
+	}
+
+	SetStandardRect(object) {
+		this.standard_rectangle = object;
+	}
+
+	// Function to make object creation less verbose
+	NewRect(list) {
+		let rect;
+
+		// copy standard rectangle
+		if (this.standard_rectangle){
+			rect = this.CopyRect(this.standard_rectangle);
+		}
+		else {
+			rect = new Rectangle(this.app);
+		}
+
+		// add to given list
+		if (null != list){
+			list.AddToList(rect);
+		}
+
+		return rect;
+	}
+
+	LinkObjects(source, destination)
+	{
+		let link = this.NewLink(this);
+		link.dst = destination
+		link.src = source
+		link.src_side = "center";
+		link.dst_side = "left";
+
+		link.AutomaticPlacement(app.state.mousepos.at_lmbu);
+	}
+
+	NewLink(list) {
+		let link;
+
+		// copy standard rectangle
+		link = new Link(this.app);
+		
+		// add to given list
+		if (null != list){
+			list.AddToList(link);
+		}
+
+		return link;
+	}	
+
+	UpdateAllLinks() {
+		for (let obj of this.objects){
+			if (obj.constructor.name != 'Link'){ continue; }
+			
+			obj.UpdateLine();
+		}
+	}
+
+	CopyRect(obj) {
+		let newobj = new Rectangle(obj.app);
+		newobj.bgcolor     = obj.bgcolor;
+		newobj.textcolor   = obj.textcolor;
+		newobj.text        = obj.text;
+		newobj.bordercolor = obj.bordercolor;
+		newobj.pos.x       = obj.pos.x;
+		newobj.pos.y       = obj.pos.y;
+		newobj.width       = obj.width;
+		newobj.height      = obj.height;
+		newobj.textsize    = obj.textsize;
+		newobj.draw_arrow  = obj.draw_arrow;
+		newobj.border_radius  = obj.border_radius;
+		newobj.border_thickness = obj.border_thickness;
+		newobj.text_align  = obj.text_align;
+		newobj.bg_image_id  = obj.bg_image_id_stored;
+		newobj.center = obj.center;
 	
+		return newobj;
+	}	
+
+	GetObjectByID(id){
+		for (let obj of this.objects) {
+			if (obj.id == id) {
+				return obj;
+			}
+		}	
+		
+		return null;
+	}
+
+}

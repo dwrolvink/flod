@@ -23,7 +23,8 @@
 			}
 
 
-			#objectEditPane {
+			#objectEditPane,
+			#linkEditPane {
 				visibility: hidden;
 				position: absolute;
 				right: 0px;
@@ -34,6 +35,13 @@
 				background-color:rgba(13,5,50,1);
 				color:white;
 			}
+			#linkEditPane input[type=submit],
+			#objectEditPane input[type=submit]{
+				background-color: rgba(0,188,255,0.1);
+				padding:2px;
+				border: none;
+				color: rgba(0,188,255,1);
+			}			
 
 			table {
 				margin: 1rem;
@@ -49,12 +57,7 @@
 				margin: 0rem;
 			}
 
-			#objectEditPane input[type=submit]{
-				background-color: rgba(0,188,255,0.1);
-				padding:2px;
-				border: none;
-				color: rgba(0,188,255,1);
-			}
+
 
 
 			#pageSettings {
@@ -119,48 +122,48 @@
 			<table>
 				<tr>
 					<td class="namecol"><label>Text</label></td>
-					<td><textarea id="text" class="input" style="height:100px; width:100%"></textarea></td>
+					<td><textarea id="text" class="input object" style="height:100px; width:100%"></textarea></td>
 				</tr><tr>
 					<td class="namecol"><label>Width</label></td>
 					<td>
-						<input type="text" id="width" class="input">
-						<input type="submit" id="+width" class="nudge" value="+">
-						<input type="submit" id="-width" class="nudge" value="-">
+						<input type="text" id="width" class="input object">
+						<input type="submit" id="+width" class="nudge object" value="+">
+						<input type="submit" id="-width" class="nudge object" value="-">
 					</td>
 				</tr><tr>
 					<td class="namecol"><label>Height</label></td>
 					<td>
-						<input type="text" id="height" class="input">
-						<input type="submit" id="+height" class="nudge" value="+">
-						<input type="submit" id="-height" class="nudge" value="-">
+						<input type="text" id="height" class="input object">
+						<input type="submit" id="+height" class="nudge object" value="+">
+						<input type="submit" id="-height" class="nudge object" value="-">
 					</td>
 				</tr><tr>
 					<td class="namecol"><label>bgcolor</label></td>
-					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="bgcolor" class="input"></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="bgcolor" class="input object"></td>
 				</tr><tr>
 					<td class="namecol"><label>Text color</label></td>
-					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="textcolor" class="input"></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="textcolor" class="input object"></td>
 				</tr><tr>
 					<td class="namecol"><label>Border color</label></td>
-					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="bordercolor" class="input"></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="bordercolor" class="input object"></td>
 				</tr><tr>
 					<td class="namecol"><label>Border thickness</label></td>
 					<td>
-						<input type="text" id="border_thickness" class="input">
-						<input type="submit" id="+border_thickness" class="nudge" value="+">
-						<input type="submit" id="-border_thickness" class="nudge" value="-">
+						<input type="text" id="border_thickness" class="input object">
+						<input type="submit" id="+border_thickness" class="nudge object" value="+">
+						<input type="submit" id="-border_thickness" class="nudge object" value="-">
 					</td>
 				</tr><tr>
 					<td class="namecol"><label>Textsize</label></td>
 					<td>
-						<input type="text" id="textsize" class="input">
-						<input type="submit" id="+textsize" class="nudge" value="+">
-						<input type="submit" id="-textsize" class="nudge" value="-">
+						<input type="text" id="textsize" class="input object">
+						<input type="submit" id="+textsize" class="nudge object" value="+">
+						<input type="submit" id="-textsize" class="nudge object" value="-">
 					</td>
 				</tr><tr>
 					<td class="namecol"><label>Boxarrow</label></td>
 					<td>
-						<select id="draw_arrow" class="select">
+						<select id="draw_arrow" class="select object">
 							<option value="none">None</option>
 							<option value="left">Left</option>
 							<option value="right">Right</option>
@@ -172,21 +175,22 @@
 				</tr><tr>
 					<td class="namecol"><label>Border-radius</label></td>
 					<td>
-						<input type="text" id="border_radius" class="input">
+						<input type="text" id="border_radius" class="input object">
 					</td>
 				</tr><tr>
 					<td class="namecol"><label>Text Align</label></td>
 					<td>
-						<select id="text_align" class="select">
+						<select id="text_align" class="select object">
 							<option value="top-left">Top Left</option>
-							<option value="top-center">Top Center</option>				
+							<option value="top-center">Top Center</option>	
+							<option value="center">Center</option>				
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<td class="namecol"><label>Lock object</label></td>
 					<td>
-						<select id="locked" class="select">
+						<select id="locked" class="select object">
 							<option value="true">True</option>
 							<option value="false">False</option>				
 						</select>
@@ -200,6 +204,50 @@
 			</ul>
 		</div>
 
+		<div id="linkEditPane" >
+			<div class="pane_header">Edit Link</div>
+			<table>
+				<tr>
+					<td class="namecol"><label>Source Side</label></td>
+					<td>
+						<select id="src_side" class="select link">
+							<option value="auto">Auto</option>
+							<option value="center">Center</option>
+							<option value="left">Left</option>
+							<option value="right">Right</option>
+							<option value="top">Top</option>
+							<option value="bottom">Bottom</option>					
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="namecol"><label>Destination Side</label></td>
+					<td>
+						<select id="dst_side" class="select link">
+							<option value="auto">Auto</option>
+							<option value="center">Center</option>
+							<option value="left">Left</option>
+							<option value="right">Right</option>
+							<option value="top">Top</option>
+							<option value="bottom">Bottom</option>					
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="namecol"><label>Line color</label></td>
+					<td><input type="text" value="rgba(40,170,255,0.5)" data-jscolor="" id="color" class="input link"></td>
+				</tr>
+				<tr>
+					<td class="namecol"><label>Line thickness</label></td>
+					<td>
+						<input type="text" id="lineWidth" class="input link">
+						<input type="submit" id="+lineWidth" class="nudge link" value="+">
+						<input type="submit" id="-lineWidth" class="nudge link" value="-">
+					</td>
+				</tr>
+			</table>
+		</div>		
+
 		
 		
 		<script src="modules/helperfuncs.js" ></script>
@@ -211,6 +259,7 @@
 
 		<!-- Object types -->
 		<script src="classes/rectangle.js"></script>
+		<script src="classes/link.js"></script>
 
 		<!-- Define starter diagram for when saved state is not present -->
 		<script src="sets/set1.js"></script>			

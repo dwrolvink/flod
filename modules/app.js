@@ -57,6 +57,8 @@ class App
 	SaveCurrentSetup() {
 		console.log('save');
 
+		ObjectMngr.UpdateAllLinks();
+
 		let text = this.PrintCurrentSetup();
 
 		// save to localstorage
@@ -81,6 +83,8 @@ class App
 
 		// add to history so we can go back in time
 		this.AddStateToHistory(setup_text);		
+
+		ObjectMngr.UpdateAllLinks();
 	}
 
 	AddStateToHistory(setup_text){
@@ -125,58 +129,45 @@ class App
 
 	PrintCurrentSetup(){
 
-		function EscapeQuotes(text){
-			return text.replace('"', '\\"').replace("'", "\\'").replace(/\n/g,'\\n');
-		}
-
 		this.state.pressed.leftmousebutton = false;
 
 		let input_selected = this.state.input_selected;
 		let object_clicked_on = this.state.object_clicked_on;
 		let input_object = this.state.input_object;
 
-		this.state.input_selected = null;
-		this.state.object_clicked_on = null;
-		this.state.input_object = null;
+		// sanitize state
+		let state = JSON.parse(JSON.stringify(this.state, getCircularReplacer()));
+
+		state.input_selected = null;
+		state.input_object = null;
+
+		state.clicked_on.rectangle = null;
+		state.clicked_on.link = null;
+		state.editpane.rectange = null;
+		state.editpane.link = null;		
 
 
 		let output = ""
 		let code = ""
 	
 		// export main state
-		code +=    `let state_json = \`${JSON.stringify(this.state, getCircularReplacer())}\`; 
+		code +=    `let state_json = \`${JSON.stringify(state, getCircularReplacer())}\`; 
 					app.state = JSON.parse(state_json);`;
 		code +=    `let viewport_json = \`${JSON.stringify(viewport)}\`;
 					viewport = JSON.parse(viewport_json);
 
 					var obj;
-		
+					var link;
 		`;
 
-		let template = ''
+		// export standard rectangle
+		let std_rect = newRect();
+		code += std_rect.GetDefinition(true);
+		code += `ObjectMngr.SetStandardRect(obj);\n`
+
 		// export objects
-		for (let obj of this.objects)
-		{
-			template = `
-				obj = newRect(app.objects);
-				obj.pos.y = ${obj.pos.y};
-				obj.pos.x = ${obj.pos.x};
-				obj.width = ${obj.width};
-				obj.height = ${obj.height};
-				obj.bgcolor = '${obj.bgcolor}';
-				obj.textcolor = '${obj.textcolor}';
-				obj.text = "${EscapeQuotes(obj.text)}";
-				obj.textsize = ${obj.textsize};
-				obj.draw_arrow = "${obj.draw_arrow}";
-				obj.border_radius = "${obj.border_radius}";
-				obj.border_thickness = "${obj.border_thickness}";
-				obj.text_align = "${obj.text_align}";
-				obj.bg_image_id = "${obj.bg_image_id_stored}";
-				obj.locked = ${obj.locked.toString()};
-				obj.center = "${obj.center}";
-				
-				`
-			code += template
+		for (let obj of this.objects) {
+			code += obj.GetDefinition();
 		}
 
 		// remove tabs from string

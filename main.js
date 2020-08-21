@@ -2,6 +2,8 @@
 // ----------------------------------------------------------
 let app = new App();
 
+localStorage.clear();
+
 // Shortcuts
 let screen = app.screen;
 let ctx = screen.ctx;

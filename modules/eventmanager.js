@@ -55,7 +55,10 @@ function OnCanvasKeyDown(event) {
 			break;
 		case 17:
 			app.state.pressed.ctrl = true;
-			break;				
+			break;		
+		case 65:
+			app.state.pressed.a = true;
+			break;						
 	}
 }
 function OnCanvasKeyUp(event) {
@@ -79,10 +82,19 @@ function OnCanvasKeyUp(event) {
 		case 66: // B
 			ObjectMngr.BringSelectedObjectToBack();
 			break;		
+		case 65:
+			app.state.pressed.a = false;
+			break;				
 		case 67: // C (copy)
 		case 68: // D (duplicate)
+			let new_obj;
 			for (obj of ObjectMngr.GetAllSelectedObjects()) {
-				copyRect(obj);
+				new_obj = copyRect(obj);
+				rect = new_obj.absrect;
+				cx = rect.x1 - app.state.mousepos.current.x;
+				cy = rect.y1 - app.state.mousepos.current.y;
+				new_obj.mouse_anchor = {x:cx, y:cy};
+				app.clipboard.AddToList(new_obj);
 			}	
 			break;
 		case 46: // Del (delete)	
@@ -101,7 +113,7 @@ function OnCanvasKeyUp(event) {
 			ObjectMngr.BringSelectedObjectToFront();
 			break;	
 		case 78: // N
-			obj = newRect(app.clipboard.objects);
+			obj = newRect(app.clipboard);
 			obj.mouse_anchor = {x:-viewport.blocksize, y:-viewport.blocksize};
 			break;
 		case 71: // G
@@ -210,14 +222,15 @@ function OnCanvasMouseUp(event)
 	// clear cache
 	app.state.object_clicked_on = null;
 	app.state.object_corner_selected = null;
+	app.state.objects_moved = false;
+	app.state.link_destination = null;
+	app.state.selectionrect = null;
 	
 }
 
 // Move objects, resize, etc
 function OnCanvasRMBD(event)
 {
-	console.log("rmbd");
-
 	// get cursor
 	cursor = getMousePos(event);
 
@@ -225,33 +238,51 @@ function OnCanvasRMBD(event)
 	app.state.mousepos.at_rmbd = cursor;
 	
 	// handle click object
-	let object_clicked_on = ObjectMngr.SelectObject(cursor.x, cursor.y);
-	
-	// clicked on an object
-	if (object_clicked_on != null)
-	{
-		// Register
-		app.state.object_clicked_on = object_clicked_on;
-	}
-	
+	app.state.clicked_on.rectangle = ObjectMngr.SelectObject('Rectangle', cursor.x, cursor.y);
+	app.state.clicked_on.link      = ObjectMngr.SelectObject('Link'     , cursor.x, cursor.y);
 } 
 
 
-function OnCanvasRMBU(event){
-	if (null == app.state.object_clicked_on){
+function OnCanvasRMBU(event)
+{
+	// ** RECTANGLE **
+	// no rectangle clicked on
+	if (null == app.state.clicked_on.rectangle){
 		CloseObjectEditPane();
 	}
-	else if (null == app.state.input_object || app.state.object_clicked_on != app.state.input_object){
+	// rectangle clicked on, but edit pane closed, or different object clicked on
+	else if (null == app.state.editpane.rectangle || app.state.clicked_on.rectangle != app.state.editpane.rectangle){
 		// select only the object
 		ObjectMngr.DeselectAllObjects([]);
-		app.state.object_clicked_on.selected = true;
+		app.state.clicked_on.rectangle.selected = true;
 
 		// open edit pane
-		OpenObjectEditPane(app.state.object_clicked_on);
+		OpenObjectEditPane(app.state.clicked_on.rectangle);
 	} 
+	// clicked on the object that is currently open in the editor
 	else {
-		app.state.object_clicked_on.selected = false;
+		app.state.clicked_on.rectangle.selected = false;
 		CloseObjectEditPane();
+	}
+
+	// ** LINK **
+	// no link clicked on
+	if (null == app.state.clicked_on.link){
+		CloseLinkEditPane();
+	}
+	// link clicked on, but edit pane closed, or different object clicked on
+	else if (null == app.state.editpane.link || app.state.clicked_on.link != app.state.editpane.link){
+		// select only the object
+		ObjectMngr.DeselectAllObjects([]);
+		app.state.clicked_on.link.selected = true;
+
+		// open edit pane
+		OpenLinkEditPane(app.state.clicked_on.link);
+	} 
+	// clicked on the object that is currently open in the editor
+	else {
+		app.state.clicked_on.link.selected = false;
+		CloseLinkEditPane();
 	}
 }
 
@@ -265,15 +296,15 @@ function OnCanvasLMBD(event)
 	cursor = getMousePos(event);
 
 	// Used left click on canvas: hide edit pane
-	app.state.object_clicked_on = null;
 	CloseObjectEditPane();	
+	CloseLinkEditPane();	
 
 	// Save info 
 	app.state.mousepos.at_lmbd = cursor;
 	app.state.viewport_origin = {x: viewport.x, y: viewport.y};
 
-	// deselect all unless shift is pressed
-	if (app.state.pressed.shift != true){
+	// deselect all unless shift or A is pressed
+	if (app.state.pressed.shift != true && app.state.pressed.a != true){
 		ObjectMngr.DeselectAllObjects([]);
 	}
 	
@@ -281,40 +312,46 @@ function OnCanvasLMBD(event)
 	obj = null;
 	if (app.state.pressed.spacebar == false && app.state.persistent_choices.force_pan == false)
 	{
+
 		// Get object that was clicked on
-		let object_clicked_on = ObjectMngr.SelectObject(cursor.x, cursor.y);
+		let object_clicked_on = ObjectMngr.SelectObject('Rectangle', cursor.x, cursor.y);
 		
-	
-		// clicked on an object
+		// clicked on an object (and we are allowed to click)
 		if (object_clicked_on != null && (object_clicked_on.locked == false || object_clicked_on.locked == true && app.state.pressed.ctrl)) 
-		{
+		{		
 			// Register
 			app.state.object_clicked_on = object_clicked_on;
 			
-			// If clicked on bottom right corner, make this known
-			let rect = object_clicked_on.absrect;
-			let offs = 10;
-			if (cursor.x < rect.x2 + offs && cursor.x > rect.x2 - offs){
-				if (cursor.y < rect.y2 + offs && cursor.y > rect.y2 - offs){
-					app.state.object_corner_selected = object_clicked_on;
-					app.state.object_clicked_on = null;
-				}
-			}
 			
-			else if (object_clicked_on.selected) { 
-				// save location of all selected objects
-				let list = [];
-				for (obj of ObjectMngr.objects){
-					if (obj.selected){
-						list.push({x: obj.pos.x, y: obj.pos.y});
+			if (object_clicked_on.constructor.name == 'Rectangle')
+			{
+				// If clicked on bottom right corner, make this known
+				let rect = object_clicked_on.absrect;
+				let offs = 10;
+				if (cursor.x < rect.x2 + offs && cursor.x > rect.x2 - offs){
+					if (cursor.y < rect.y2 + offs && cursor.y > rect.y2 - offs){
+						app.state.object_corner_selected = object_clicked_on;
+						app.state.object_clicked_on = null;
 					}
 				}
-				app.state.object_origin = list;
 			
+				else if (object_clicked_on.selected) { 
+					// save location of all selected objects
+					let list = [];
+					for (obj of ObjectMngr.objects){
+						if (obj.selected){
+							list.push({x: obj.pos.x, y: obj.pos.y});
+						}
+					}
+					app.state.object_origin = list;
+				}
+				else {
+					// save location of one object
+					app.state.object_origin = {x: object_clicked_on.pos.x, y: object_clicked_on.pos.y};
+				}
 			}
 			else {
-				// save location of one object
-				app.state.object_origin = {x: object_clicked_on.pos.x, y: object_clicked_on.pos.y};
+				// do nothing here
 			}
 		}
 	}
@@ -322,6 +359,7 @@ function OnCanvasLMBD(event)
 
 function OnCanvasLMBU(event)
 {
+
 	// Save info 
 	app.state.mousepos.at_lmbu = getMousePos(event);
 	
@@ -353,12 +391,33 @@ function OnCanvasLMBU(event)
 			return;
 		}
 	}
-	app.state.selectionrect = null;
+
+	
+	// attach objects with link
+	if (app.state.pressed.a && app.state.object_clicked_on != null)
+	{
+
+		let dest = app.state.object_clicked_on;
+		let objects = ObjectMngr.GetAllSelectedObjects();
+
+
+		for (let obj of objects){
+			ObjectMngr.LinkObjects(obj, dest);
+		}
+
+		ObjectMngr.UpdateAllLinks();
+		app.SaveCurrentSetup();
+	}
+
 
 	// case 1: dragging
 	var [dx, dy, isDrag] = GetMouseDrag(app.state.mousepos.at_lmbu);
 	if (isDrag) {
 		// dragging processing is done in OnCanvasMouseMove
+
+		if (app.state.objects_moved){
+			app.SaveCurrentSetup();
+		}
 		
 		return;
 	}	
@@ -372,7 +431,8 @@ function OnCanvasLMBU(event)
 
 			obj.pos.x = Math.round((cursor.x + ma.x - viewport.x) / blocksize);
 			obj.pos.y = Math.round((cursor.y + ma.y - viewport.y) / blocksize);
-			ObjectMngr.objects.push(obj);
+
+			ObjectMngr.AddToList(obj);
 		}
 		ObjectMngr.DeselectAllObjects([]);
 		app.clipboard.SelectAllObjects([]);
@@ -387,10 +447,10 @@ function OnCanvasLMBU(event)
 	// case 2: click object = (de)select object
 	else if (null != obj && obj_manipulation_is_on) 
 	{
+		
 		n = ObjectMngr.GetAllSelectedObjects().length;
 
 		// deselect all, unless shift is pressed
-		console.log(app.state.pressed.shift);
 		if (!app.state.pressed.shift){
 			ObjectMngr.DeselectAllObjects([obj,]);
 		}		
@@ -482,7 +542,6 @@ function HandleDrag()
 		// Lockstep to grid
 		if (Math.abs(dx) >= 0.5*blocksize || Math.abs(dy) >= 0.5*blocksize) 
 		{
-
 			// move all selected objects 
 			// (when dragging a selected object, more might be selected, so move them all together)
 			if (obj.selected) {
@@ -496,10 +555,12 @@ function HandleDrag()
 			}
 			// move single object
 			else {
-				console.log("move objects");
 				obj.pos.x = object_origin.x + Math.round(dx / blocksize);
 				obj.pos.y = object_origin.y + Math.round(dy / blocksize);
 			}
+
+			// let app know objects have been moved
+			app.state.objects_moved = true;			
 
 		}
 	}
@@ -522,6 +583,8 @@ function HandleDrag()
 			obj_corner.height += Math.round(y_dif / blocksize);
 		}		
 	}
+
+	ObjectMngr.UpdateAllLinks();
 	
 }
 
@@ -556,4 +619,5 @@ function OnWindowResize(){
 }
 function AdjustZoom(){
 	screen.AdjustZoom();
+	ObjectMngr.UpdateAllLinks();
 }

@@ -1,9 +1,9 @@
 
 class Rectangle {
 	constructor(){
-		this.bgcolor = 'rgba(0, 102, 255, 0)';
-		this.bordercolor = "#AAAAAA"; 
-		this.textcolor = "#FFFFFF";
+		this.bgcolor = 'rgba(255,255,255,1)';
+		this.bordercolor = "#000000"; 
+		this.textcolor = "#000000";
 		this.border_radius = 0;
 		this.border_thickness = 1;
 		this.textsize = 8;
@@ -13,9 +13,9 @@ class Rectangle {
 			y : 1
 		}
 		this.width = 12;
-		this.height = 2;
-		this.selected = false;
+		this.height = 4;
 		this.text = "";
+		this.selected = false;
 		this.mouse_anchor = null;
 		this.draw_arrow = 'none';
 		this.text_align = "top-left";
@@ -97,8 +97,20 @@ class Rectangle {
 	Kill() {
 		let list = []
 		for (obj of ObjectMngr.objects) {
-			if (obj != this){
-				list.push(obj);
+
+			// remove "this"
+			if (obj.constructor.name == 'Rectangle'){
+				if (obj != this){
+					list.push(obj);
+				}
+			}
+
+			// remove links
+			else if (obj.constructor.name == 'Link'){
+				if (obj.src != this && obj.dst != this){
+					console.log(obj.src);
+					list.push(obj);
+				}
 			}
 		}
 		ObjectMngr.objects = list;
@@ -127,13 +139,98 @@ class Rectangle {
 			ctx.strokeRect(rect.x1, rect.y1, rect.w, rect.h);
 		}
 	}
+
+	GetDefinition(get_standard)
+	{
+		function EscapeQuotes(text){
+			return text.replace('"', '\\"').replace("'", "\\'").replace(/\n/g,'\\n');
+		}
+
+		// When get_standard = true, return the standard definition of a rectangle, otherwise
+		// return the definition for this specific instance
+
+		let instance_call = `obj = ObjectMngr.NewRect(ObjectMngr);`
+		let all = false;
+
+		if (get_standard){
+			all = true;
+			instance_call = `obj = ObjectMngr.NewRect();`
+		}
+
+
+		// Get standard rect
+		let std_obj;
+		if (get_standard != true){
+			std_obj = newRect();
+		}
+
+		// Main output
+		let output = "";	
+		output +=  `
+					${instance_call}
+					obj.id = ${this.id};
+					obj.pos.y = ${this.pos.y};
+					obj.pos.x = ${this.pos.x};
+					obj.width = ${this.width};
+					obj.height = ${this.height};
+				`
+	
+		if (all || this.bgcolor != std_obj.bgcolor){
+			output += `obj.bgcolor = '${this.bgcolor}';\n`
+		}
+		if (all || this.textcolor != std_obj.textcolor){
+			output += `obj.textcolor = '${this.textcolor}';\n`
+		}	
+		if (all || this.text != std_obj.text){
+			output += `obj.text = "${EscapeQuotes(this.text)}";\n`
+		}	
+		if (all || this.textsize != std_obj.textsize){
+			output += `obj.textsize = '${this.textsize}';\n`
+		}	
+		if (all || this.draw_arrow != std_obj.draw_arrow){
+			output += `obj.draw_arrow = '${this.draw_arrow}';\n`
+		}	
+		if (all || this.border_radius != std_obj.border_radius){
+			output += `obj.border_radius = '${this.border_radius}';\n`
+		}	
+		if (all || this.border_thickness != std_obj.border_thickness){
+			output += `obj.border_thickness = '${this.border_thickness}';\n`
+		}	
+		if (all || this.text_align != std_obj.text_align){
+			output += `obj.text_align = '${this.text_align}';\n`
+		}	
+		if (all || this.bg_image_id != std_obj.bg_image_id){
+			output += `obj.bg_image_id = '${this.bg_image_id}';\n`
+		}	
+		if (all || this.locked != std_obj.locked){
+			output += `obj.locked = ${this.locked.toString()};\n`
+		}	
+		if (all || this.center != std_obj.center){
+			output += `obj.center = '${this.center}';\n`
+		}		
+		
+		// remove tabs
+		let tab = RegExp("\\t", "g");
+		output = output.replace(tab, '');	
+	
+		return output;
+		
+	}	
 }
 
 // Function to make object creation less verbose
 function newRect(list) {
-	index = list.push(new Rectangle()); 
-	return list[index-1];
+	let rect = new Rectangle();
+
+	// add to given list
+	if (null != list){
+		list.AddToList(rect);
+	}
+
+	return rect;
 }
+
+
 
 function copyRect(obj) {
 	newobj = new Rectangle(obj.app);
@@ -153,10 +250,6 @@ function copyRect(obj) {
 	newobj.bg_image_id  = obj.bg_image_id_stored;
 	newobj.center = obj.center;
 
-	rect = newobj.absrect;
-	cx = rect.x1 - app.state.mousepos.current.x;
-	cy = rect.y1 - app.state.mousepos.current.y;
-	newobj.mouse_anchor = {x:cx, y:cy};
-	app.clipboard.objects.push(newobj);
+	return newobj;
 }
 
